@@ -21,10 +21,12 @@ import { expect, test } from '@playwright/test';
 // plugin registered, open its sidebar entry, and assert the canned FeatureFlag
 // (e2e/fixtures/featureflag.yaml) is listed.
 //
-// NOTE: the selectors below target the Story 1.2 throwaway spike UI that
-// src/index.tsx currently registers (sidebar label "Feature Flags (spike)").
-// When Story 2.1 registers the real "OpenFeature" sidebar and retires the
-// spike, these selectors MUST be updated in lockstep.
+// NOTE: the real "OpenFeature Operator" sidebar is now registered (see
+// src/index.tsx and src/crds/registerCrd.tsx), with a "Feature Flags"
+// sub-entry replacing the retired Story 1.2 spike label
+// ("Feature Flags (spike)"). Keep the selector below in sync with
+// OPENFEATURE_SIDEBAR_LABEL / the FeatureFlag CRD's registered label if either
+// changes.
 
 // kind names the context `kind-<clusterName>`; keep this in sync with the
 // cluster name in e2e/fixtures/kind-config.yaml and nightly-e2e.yml.
@@ -61,8 +63,8 @@ test('plugin sidebar entry appears and the canned flag is listed', async ({ page
   const plugins = await res.json();
   expect(JSON.stringify(plugins).toLowerCase()).toContain('openfeature');
 
-  // Open the plugin's sidebar entry (Story 1.2 spike label — see NOTE above).
-  await page.getByText('Feature Flags (spike)', { exact: false }).first().click();
+  // Open the plugin's sidebar entry (real label — see NOTE above).
+  await page.getByText('Feature Flags', { exact: false }).first().click();
 
   // Assert the canned flag is listed. Match the cell text directly (robust to
   // whatever table markup SimpleTable emits) with a generous timeout for a cold
