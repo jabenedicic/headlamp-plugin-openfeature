@@ -1,0 +1,10 @@
+# Dependencies and build output
+node_modules/
+dist/
+build/
+
+# flagd v0 JSON Schemas committed verbatim from upstream open-feature/schemas
+# (Story 1.7). They must stay byte-for-byte identical to source, so Prettier must
+# not reformat them.
+src/schemas/flagd-flags.schema.json
+src/schemas/flagd-targeting.schema.json

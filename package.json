@@ -1,18 +1,28 @@
 {
-  "name": "open-feature-headlamp-scaffold",
-  "version": "0.1.0",
-  "description": "Your Headlamp plugin",
+  "name": "headlamp-openfeature",
+  "version": "0.0.0",
+  "description": "Headlamp plugin for viewing and managing OpenFeature feature flags",
+  "license": "Apache-2.0",
+  "engines": {
+    "node": ">=20.18.1"
+  },
   "scripts": {
     "start": "headlamp-plugin start",
     "build": "headlamp-plugin build",
     "format": "headlamp-plugin format",
+    "format-check": "headlamp-plugin format --check",
     "lint": "headlamp-plugin lint",
     "lint-fix": "headlamp-plugin lint --fix",
     "package": "headlamp-plugin package",
     "tsc": "headlamp-plugin tsc",
     "storybook": "headlamp-plugin storybook",
     "storybook-build": "headlamp-plugin storybook-build",
+    "spdx": "node ./scripts/check-spdx.mjs",
+    "licenses": "license-checker --production --onlyAllow \"Apache-2.0;MIT;BSD-2-Clause;BSD-3-Clause;ISC\" --summary && license-checker --failOn \"GPL-2.0;GPL-2.0-only;GPL-2.0-or-later;GPL-3.0;GPL-3.0-only;GPL-3.0-or-later;LGPL-2.0;LGPL-2.0-only;LGPL-2.1;LGPL-2.1-only;LGPL-2.1-or-later;LGPL-3.0;LGPL-3.0-only;LGPL-3.0-or-later;AGPL-1.0;AGPL-3.0;AGPL-3.0-only;AGPL-3.0-or-later;SSPL-1.0\" --summary",
+    "size": "size-limit",
+    "pretest": "npm run spdx",
     "test": "headlamp-plugin test",
+    "e2e": "playwright test",
     "i18n": "headlamp-plugin i18n"
   },
   "keywords": [
@@ -29,12 +39,131 @@
       "@headlamp-k8s",
       "prettier",
       "plugin:jsx-a11y/recommended"
-    ]
+    ],
+    "rules": {
+      "react/no-danger": "error",
+      "no-restricted-globals": [
+        "error",
+        {
+          "name": "fetch",
+          "message": "Direct fetch is forbidden (FR34). Access clusters only through the Headlamp SDK (@kinvolk/headlamp-plugin/lib)."
+        },
+        {
+          "name": "XMLHttpRequest",
+          "message": "Direct XMLHttpRequest is forbidden (FR34). Access clusters only through the Headlamp SDK (@kinvolk/headlamp-plugin/lib)."
+        },
+        {
+          "name": "localStorage",
+          "message": "Direct localStorage is forbidden (FR34). Session state must go only through the Headlamp SDK — no parallel client state bypassing the SDK watch."
+        },
+        {
+          "name": "sessionStorage",
+          "message": "Direct sessionStorage is forbidden (FR34). Session state must go only through the Headlamp SDK — no parallel client state bypassing the SDK watch."
+        },
+        {
+          "name": "WebSocket",
+          "message": "Direct WebSocket is forbidden (FR34). Access clusters only through the Headlamp SDK — no parallel data plane bypassing the SDK watch."
+        },
+        {
+          "name": "EventSource",
+          "message": "Direct EventSource is forbidden (FR34). Access clusters only through the Headlamp SDK — no parallel data plane bypassing the SDK watch."
+        }
+      ],
+      "no-restricted-imports": [
+        "error",
+        {
+          "patterns": [
+            {
+              "group": [
+                "@kinvolk/headlamp-plugin/lib/plugin",
+                "@kinvolk/headlamp-plugin/lib/plugin/**"
+              ],
+              "message": "Import only from @kinvolk/headlamp-plugin/lib or /lib/CommonComponents — never SDK internals (/lib/plugin/**)."
+            },
+            {
+              "group": [
+                "@mui/material/*",
+                "@mui/material/*/**",
+                "!@mui/material/styles",
+                "!@mui/material/styles/**"
+              ],
+              "message": "Use named imports from @mui/material; only @mui/material/styles (and its subpaths) may be deep-imported (for styled())."
+            },
+            {
+              "group": [
+                "axios",
+                "axios/**",
+                "node-fetch",
+                "node-fetch/**",
+                "got",
+                "got/**",
+                "ky",
+                "ky/**",
+                "superagent",
+                "superagent/**"
+              ],
+              "message": "Direct HTTP-client libraries are forbidden (FR34). Access clusters only through the Headlamp SDK — no parallel data plane bypassing the SDK watch."
+            }
+          ]
+        }
+      ],
+      "no-restricted-syntax": [
+        "error",
+        {
+          "selector": "ImportDeclaration[source.value='@mui/material'] > ImportNamespaceSpecifier",
+          "message": "No namespace import of @mui/material; use named imports instead."
+        },
+        {
+          "selector": "NewExpression[callee.name='XMLHttpRequest']",
+          "message": "Direct XMLHttpRequest is forbidden (FR34). Access clusters only through the Headlamp SDK."
+        },
+        {
+          "selector": "MemberExpression[object.name='window'][property.name='fetch']",
+          "message": "window.fetch is forbidden (FR34). Access clusters only through the Headlamp SDK."
+        },
+        {
+          "selector": "MemberExpression[object.name='window'][property.name='localStorage']",
+          "message": "window.localStorage is forbidden (FR34). Session state must go only through the Headlamp SDK — no parallel client state bypassing the SDK watch."
+        },
+        {
+          "selector": "MemberExpression[object.name='window'][property.name='sessionStorage']",
+          "message": "window.sessionStorage is forbidden (FR34). Session state must go only through the Headlamp SDK — no parallel client state bypassing the SDK watch."
+        },
+        {
+          "selector": "MemberExpression[object.name='window'][property.name='WebSocket']",
+          "message": "window.WebSocket is forbidden (FR34). Access clusters only through the Headlamp SDK — no parallel data plane bypassing the SDK watch."
+        },
+        {
+          "selector": "MemberExpression[object.name='window'][property.name='EventSource']",
+          "message": "window.EventSource is forbidden (FR34). Access clusters only through the Headlamp SDK — no parallel data plane bypassing the SDK watch."
+        },
+        {
+          "selector": "Literal[value=/#[0-9a-fA-F]{3,8}/]",
+          "message": "No hardcoded hex colours; use theme tokens instead."
+        },
+        {
+          "selector": "Literal[value=/[0-9]px/]",
+          "message": "No hardcoded px literals; use theme spacing tokens instead."
+        },
+        {
+          "selector": "TemplateElement[value.cooked=/#[0-9a-fA-F]{3,8}/]",
+          "message": "No hardcoded hex colours in template literals; use theme tokens instead."
+        },
+        {
+          "selector": "TemplateElement[value.cooked=/[0-9]px/]",
+          "message": "No hardcoded px literals in template literals; use theme spacing tokens instead."
+        }
+      ]
+    }
   },
   "overrides": {
     "typescript": "5.6.2"
   },
   "devDependencies": {
-    "@kinvolk/headlamp-plugin": "^0.14.0"
+    "@kinvolk/headlamp-plugin": "^0.14.0",
+    "@playwright/test": "^1.61.1",
+    "@size-limit/file": "^12.1.0",
+    "license-checker": "^25.0.1",
+    "size-limit": "^12.1.0"
   }
 }

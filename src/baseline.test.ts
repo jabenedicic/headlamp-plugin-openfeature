@@ -16,4 +16,10 @@
  * limitations under the License.
  */
 
-/// <reference types="@kinvolk/headlamp-plugin" />
+import { describe, expect, it } from 'vitest';
+
+describe('baseline test harness', () => {
+  it('runs a trivial passing test', () => {
+    expect(1 + 1).toBe(2);
+  });
+});
