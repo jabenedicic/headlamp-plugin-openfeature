@@ -34,9 +34,13 @@ import {
   OPENFEATURE_SIDEBAR_PARENT,
 } from './constants/routes';
 import { registerCrd } from './crds/registerCrd';
+import { FeatureFlagDetail } from './views/FeatureFlagDetail';
 import { FeatureFlagList } from './views/FeatureFlagList';
+import { FeatureFlagSourceDetail } from './views/FeatureFlagSourceDetail';
 import { FeatureFlagSourceList } from './views/FeatureFlagSourceList';
+import { FlagdDetail } from './views/FlagdDetail';
 import { FlagdList } from './views/FlagdList';
+import { InProcessConfigurationDetail } from './views/InProcessConfigurationDetail';
 import { InProcessConfigurationList } from './views/InProcessConfigurationList';
 
 registerSidebarEntry({
@@ -52,7 +56,7 @@ registerCrd({
   plural: FEATURE_FLAG_RESOURCE,
   label: 'Feature Flags',
   List: FeatureFlagList,
-  Detail: FeatureFlagList,
+  Detail: FeatureFlagDetail,
 });
 
 registerCrd({
@@ -60,7 +64,7 @@ registerCrd({
   plural: FEATURE_FLAG_SOURCE_RESOURCE,
   label: 'Feature Flag Sources',
   List: FeatureFlagSourceList,
-  Detail: FeatureFlagSourceList,
+  Detail: FeatureFlagSourceDetail,
 });
 
 registerCrd({
@@ -68,7 +72,7 @@ registerCrd({
   plural: FLAGD_RESOURCE,
   label: 'flagd Instances',
   List: FlagdList,
-  Detail: FlagdList,
+  Detail: FlagdDetail,
 });
 
 registerCrd({
@@ -76,5 +80,5 @@ registerCrd({
   plural: IN_PROCESS_CONFIGURATION_RESOURCE,
   label: 'In-Process Configurations',
   List: InProcessConfigurationList,
-  Detail: InProcessConfigurationList,
+  Detail: InProcessConfigurationDetail,
 });
