@@ -1,0 +1,101 @@
+name: Nightly E2E
+
+# Scheduled end-to-end harness (NFR27): provisions a real kind cluster, installs
+# cert-manager + the OpenFeature Operator, starts a real Headlamp server with the
+# freshly-packaged plugin loaded, and runs one Playwright smoke flow.
+#
+# Triggers are schedule + manual dispatch ONLY. This is deliberately NOT a
+# pull_request/push check — it must never become a required PR gate.
+on:
+  schedule:
+    - cron: '0 3 * * *'
+  workflow_dispatch:
+
+# Only the newest nightly run survives; superseded runs are cancelled.
+concurrency:
+  group: nightly-e2e-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+permissions:
+  contents: read
+
+jobs:
+  e2e:
+    name: e2e
+    runs-on: ubuntu-latest
+    # Cap the full provision + browser run so a wedged step cannot hang the job.
+    # Sized above the worst-case sum of the bounded provisioning waits (cert-
+    # manager + operator + CRD ~17 min) plus build/install/package, browser
+    # download, and the retried Playwright run, so a merely-slow night fails a
+    # step cleanly instead of tripping an opaque job-level cancellation.
+    timeout-minutes: 45
+    steps:
+      - name: Checkout
+        uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7.0.0
+
+      - name: Set up Node
+        uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7.0.0
+        with:
+          node-version-file: .nvmrc
+          cache: npm
+
+      # Reproducible install against the committed lockfile (NFR26).
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Build
+        run: npm run build
+
+      - name: Package plugin
+        run: npm run package
+
+      # kind cluster via the maintained action (no local kind CLI assumed). The
+      # cluster name must match kind-<name> selected in list.e2e.ts.
+      - name: Create kind cluster
+        uses: helm/kind-action@ef37e7f390d99f746eb8b610417061a60e82a6cc # v1.14.0
+        with:
+          config: e2e/fixtures/kind-config.yaml
+          cluster_name: headlamp-openfeature-e2e
+
+      - name: Install cert-manager + OpenFeature Operator
+        run: bash e2e/setup/install-operator.sh
+
+      - name: Start Headlamp server with the plugin
+        run: bash e2e/setup/start-headlamp.sh
+
+      - name: Install Playwright browsers
+        run: npx playwright install --with-deps chromium
+
+      - name: Run Playwright smoke flow
+        run: npm run e2e
+        env:
+          HEADLAMP_TEST_URL: http://localhost:4466
+
+      # Dump server + cluster state on ANY outcome. The Playwright step is the
+      # most likely place a nightly fails, and once start-headlamp.sh exits 0 the
+      # Headlamp container logs, operator/flagd pods, and kubectl state are only
+      # reachable here — the HTML report alone cannot explain a server-side flake.
+      - name: Collect diagnostics
+        if: always()
+        run: |
+          echo "::group::docker ps -a"
+          docker ps -a || true
+          echo "::endgroup::"
+          echo "::group::headlamp server logs"
+          docker logs headlamp-e2e 2>&1 || true
+          echo "::endgroup::"
+          echo "::group::pods (all namespaces)"
+          kubectl get pods -A || true
+          echo "::endgroup::"
+          echo "::group::operator + flagd logs"
+          kubectl logs -n open-feature-operator-system -l app.kubernetes.io/name=open-feature-operator --tail=200 --all-containers || true
+          kubectl get featureflags -A -o yaml || true
+          echo "::endgroup::"
+
+      # Always upload the HTML report so failures are diagnosable.
+      - name: Upload Playwright report
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
+        with:
+          name: playwright-report
+          path: playwright-report/
