@@ -86,6 +86,17 @@ describe('CI pipeline config', () => {
   // recommend Renovate over Dependabot, and Renovate's :gitSignOff preset makes bot
   // commits DCO-compliant, which Dependabot cannot do.
 
+  it('renovate.json exists, parses as JSON, and extends :gitSignOff', () => {
+    expect(exists('renovate.json'), 'missing renovate.json').toBe(true);
+    const config = JSON.parse(read('renovate.json'));
+    // Losing this preset would silently drop the Signed-off-by trailer from
+    // every bot commit, deadlocking Renovate PRs against a required DCO check.
+    expect(
+      Array.isArray(config.extends) && config.extends.includes(':gitSignOff'),
+      'renovate.json must extend :gitSignOff so bot commits satisfy DCO'
+    ).toBe(true);
+  });
+
   it('.size-limit.cjs gates dist/main.js at the 500 KB budget', () => {
     const sl = '.size-limit.cjs';
     expect(contains(sl, 'dist/main.js')).toBe(true);
@@ -106,5 +117,59 @@ describe('CI pipeline config', () => {
 
   it('.gitignore ignores stray compiled src JS', () => {
     expect(contains('.gitignore', 'src/**/*.js')).toBe(true);
+  });
+});
+
+describe('Workflow supply-chain hardening', () => {
+  // Every workflow that exists on this branch — a reverted pin (e.g. back to
+  // `@v2`) or a dropped permissions block in any of these must fail this suite.
+  const workflowFiles = [
+    '.github/workflows/pr.yml',
+    '.github/workflows/codeql.yml',
+    '.github/workflows/lint-pr.yml',
+    '.github/workflows/nightly-e2e.yml',
+    '.github/workflows/release-please.yml',
+  ];
+
+  it('has every workflow file this suite audits', () => {
+    for (const file of workflowFiles) {
+      expect(exists(file), `missing workflow file: ${file}`).toBe(true);
+    }
+  });
+
+  it('pins every `uses:` action reference to a full 40-hex commit SHA', () => {
+    // A trailing `# vX.Y.Z` comment documenting the human-readable version is
+    // fine (and expected); a floating `@vN`/`@main`/`@master` ref is not.
+    const shaPinned = /uses:\s+\S+@[0-9a-f]{40}(\s|$)/;
+    const floatingRef = /uses:\s+\S+@(v\d[\w.-]*|main|master)\s*(#.*)?$/;
+
+    for (const file of workflowFiles) {
+      const usesLines = read(file)
+        .split('\n')
+        .filter(line => /\buses:/.test(line));
+      expect(usesLines.length, `${file} declares no uses: lines`).toBeGreaterThan(0);
+
+      for (const line of usesLines) {
+        expect(
+          shaPinned.test(line),
+          `${file}: action reference not pinned to a 40-hex commit SHA: "${line.trim()}"`
+        ).toBe(true);
+        expect(
+          floatingRef.test(line),
+          `${file}: action reference floats on a tag/branch instead of a SHA: "${line.trim()}"`
+        ).toBe(false);
+      }
+    }
+  });
+
+  it('pr.yml declares least-privilege permissions (contents: read)', () => {
+    const pr = read('.github/workflows/pr.yml');
+    expect(contains('.github/workflows/pr.yml', 'permissions:')).toBe(true);
+    // Anchored to the key/value pair, not merely the word "permissions"
+    // appearing anywhere, so dropping the block itself is caught.
+    expect(
+      /permissions:\s*\n\s*contents:\s*read/.test(pr),
+      'pr.yml missing a top-level `permissions: contents: read` block'
+    ).toBe(true);
   });
 });

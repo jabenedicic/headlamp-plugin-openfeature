@@ -6,7 +6,7 @@ SPDX-License-Identifier: Apache-2.0
 
 Some supply-chain and code-scanning controls are GitHub **repository settings**,
 not files that can be committed. This PR ships the committable half — the
-`pr.yml` PR gate, the `codeql.yml` scan, and `dependabot.yml` — and this runbook
+`pr.yml` PR gate, the `codeql.yml` scan, and `renovate.json` — and this runbook
 records the non-committable toggles a maintainer must enable in the GitHub UI so
 the security posture is auditable and honest.
 
@@ -20,7 +20,7 @@ security and analysis**). Enable each:
 
 | Toggle | Where | Why |
 |--------|-------|-----|
-| **Dependabot alerts** | Settings → Advanced Security → Dependabot alerts | Surfaces known CVEs in dependencies. Required for `dependabot.yml` to raise automatic **security** update PRs (the committed config only schedules the weekly version bumps). |
+| **Dependabot alerts** | Settings → Advanced Security → Dependabot alerts | Surfaces known CVEs in dependencies. This is a separate GitHub security feature from the dependency-update *automation* (that is Renovate's job, per `renovate.json`) and stays enabled regardless of which bot performs the version bumps. |
 | **Secret scanning** | Settings → Advanced Security → Secret scanning | Detects committed credentials/tokens. |
 | **Push protection** | Settings → Advanced Security → Secret scanning → Push protection | Blocks pushes that contain detected secrets before they land. |
 | **Private vulnerability reporting** | Settings → Advanced Security → Private vulnerability reporting | Gives reporters the private advisory channel referenced by `SECURITY.md`. |
@@ -61,14 +61,12 @@ Notes:
   **Require review from Code Owners** (honours `.github/CODEOWNERS`), and
   **Require signed commits / DCO sign-off** per `CONTRIBUTING.md`.
 
-> **DCO vs. Dependabot.** Dependabot commits carry no `Signed-off-by` trailer and
-> cannot be configured to add one, so if the DCO check is *required* on `main`
-> every weekly Dependabot PR fails it and cannot merge as-is. Pick one before
-> enforcing DCO: (a) install the DCO GitHub App and add Dependabot (and other
-> bots) to its allowlist, (b) leave the DCO check *not required* and rely on
-> reviewer sign-off, or (c) accept that a maintainer must rebase each Dependabot
-> PR with `--signoff`. Without one of these, the dependency-hygiene automation is
-> effectively blocked.
+> **DCO and Renovate.** Dependency updates are automated by Renovate
+> (`renovate.json`), not Dependabot. Renovate's `:gitSignOff` preset adds a
+> `Signed-off-by` trailer to every commit it makes, so its PRs satisfy a
+> *required* DCO check on `main` on their own — no allowlist, no reviewer
+> workaround, and no manual rebase-with-`--signoff` needed. DCO can be enforced
+> as a required check with no bot exemption at all.
 
 ## 3. Licence gate scope
 
