@@ -1,0 +1,48 @@
+name: CodeQL
+
+# Committable half of GHAS code scanning: static analysis on every PR and a
+# weekly scheduled sweep. The repo-settings toggles (Dependabot alerts, secret
+# scanning, private vulnerability reporting) are documented in
+# docs/repo-settings.md and enabled in the GitHub UI, not here.
+on:
+  push:
+    branches: [main]
+  pull_request:
+  schedule:
+    # Weekly, Monday 07:00 UTC.
+    - cron: '0 7 * * 1'
+
+concurrency:
+  group: codeql-${{ github.workflow }}-${{ github.ref }}
+  # Only cancel superseded pull-request runs. A scheduled or main-branch scan
+  # must run to completion — cancelling it mid-flight (e.g. because another
+  # push to main lands, sharing this ref-keyed group) leaves stale/incomplete
+  # code-scanning results for the default branch.
+  cancel-in-progress: ${{ github.event_name == 'pull_request' }}
+
+jobs:
+  analyze:
+    name: analyze
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    permissions:
+      contents: read
+      security-events: write
+      actions: read
+    strategy:
+      fail-fast: false
+      matrix:
+        language: [javascript-typescript]
+    steps:
+      - name: Checkout
+        uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7.0.0
+
+      - name: Initialize CodeQL
+        uses: github/codeql-action/init@7188fc363630916deb702c7fdcf4e481b751f97a # v4
+        with:
+          languages: ${{ matrix.language }}
+
+      - name: Perform CodeQL analysis
+        uses: github/codeql-action/analyze@7188fc363630916deb702c7fdcf4e481b751f97a # v4
+        with:
+          category: '/language:${{ matrix.language }}'
