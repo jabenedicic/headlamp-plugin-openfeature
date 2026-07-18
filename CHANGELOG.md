@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.1.1](https://github.com/jabenedicic/headlamp-plugin-openfeature/compare/v0.1.0...v0.1.1) (2026-07-18)
+
+
+### 🧹 Chore
+
+* **deps:** update node.js to v20.20.2 ([#4](https://github.com/jabenedicic/headlamp-plugin-openfeature/issues/4)) ([0dfe964](https://github.com/jabenedicic/headlamp-plugin-openfeature/commit/0dfe964a913ec6161fa9788bdc0dd333b23a5f4b))
+
 ## 0.1.0 (2026-07-18)
 
 
