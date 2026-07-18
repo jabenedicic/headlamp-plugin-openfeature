@@ -23,7 +23,8 @@
     },
     {
       "type": "chore",
-      "section": "\ud83e\uddf9 Chore"
+      "section": "\ud83e\uddf9 Chore",
+      "hidden": true
     },
     {
       "type": "docs",
