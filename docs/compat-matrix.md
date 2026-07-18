@@ -10,7 +10,7 @@ inference.
 
 | Plugin | Headlamp | OpenFeature Operator | flagd | Kubernetes |
 |--------|----------|----------------------|-------|------------|
-| 0.1.0  | `latest` image, `ghcr.io/headlamp-k8s/headlamp:latest` (tested 2026-07-18; the image embeds no version string, see Notes) | 0.9.2 (chart) | n/a — the plugin never talks to flagd | v1.31.x (Docker Desktop `docker-desktop` context) |
+| 0.1.0  | v0.43.0 (`ghcr.io/headlamp-k8s/headlamp:v0.43.0`, also the tag the nightly e2e pins) | 0.9.2 (chart) | n/a — the plugin never talks to flagd | v1.31.x (Docker Desktop `docker-desktop` context) |
 
 ## Notes
 
@@ -20,7 +20,12 @@ inference.
 - CRD version support is `v1beta1` only. Other versions are a future milestone.
 - Any CNCF-compliant Kubernetes distribution should work; the plugin makes no
   distribution-specific assumptions.
-- The Headlamp version could not be pinned to a semver: the `ghcr.io/headlamp-k8s/headlamp:latest`
-  image (pulled 2026-06-16) does not embed an `org.opencontainers.image.version` label
-  or a version string in its server binary or frontend bundle. The row above records
-  the tag and the date it was tested rather than inventing a version number.
+- The Headlamp version is the tag pinned by the nightly end-to-end harness
+  (`e2e/setup/start-headlamp.sh`), so the documented tested version matches the
+  automated verification path. Every change was also driven manually against
+  Headlamp `v0.43.0` locally (the `:latest` image on the v0.43.0 release date is
+  the same digest as `:v0.43.0`).
+- The minimum supported Headlamp version is not asserted below `v0.43.0`: the
+  plugin has only been verified against `v0.43.0`, which also carries the RBAC
+  behaviour later access-control work depends on. Older versions may work but are
+  untested.

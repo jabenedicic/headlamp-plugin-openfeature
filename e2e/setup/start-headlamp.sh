@@ -12,7 +12,7 @@ set -euo pipefail
 
 # --- Pinned Headlamp image (NFR26). -------------------------------------------
 # Track the Headlamp/plugin compatibility matrix; MUST NOT be `:latest`.
-HEADLAMP_IMAGE="ghcr.io/headlamp-k8s/headlamp:v0.30.0"
+HEADLAMP_IMAGE="ghcr.io/headlamp-k8s/headlamp:v0.43.0"
 
 REPO_ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/../.." && pwd)"
 # Local plugin-staging dir; kept in .gitignore. Layout must be

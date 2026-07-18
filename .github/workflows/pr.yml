@@ -52,7 +52,7 @@ jobs:
       - name: SPDX headers
         run: npm run spdx
 
-      - name: Unit tests (Jest)
+      - name: Unit tests (Vitest)
         run: npm run test
 
       - name: Build

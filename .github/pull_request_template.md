@@ -20,4 +20,4 @@ checklist. See CONTRIBUTING.md for full details.
 - [ ] `npm run test` passes.
 - [ ] `npm run build` passes.
 - [ ] New/changed files under `src/**` carry the SPDX licence header (`npm run spdx` passes).
-- [ ] User-visible changes are recorded under `[Unreleased]` in `CHANGELOG.md`.
+- [ ] The PR title follows [Conventional Commits](https://www.conventionalcommits.org/) — it becomes the squash commit and drives release-please's version bump and changelog. (Do not edit `CHANGELOG.md` by hand; release-please owns it.)

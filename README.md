@@ -8,7 +8,8 @@ Kubernetes dashboard. It surfaces the resources managed by the OpenFeature
 Operator and flagd so platform teams can inspect and change flag configuration in
 context, using Headlamp's own native resource screens.
 
-> Status: early development (`0.1.0`). Interfaces and screens are still evolving.
+> Status: early development. The first tagged release will be `0.1.0`; interfaces
+> and screens are still evolving.
 
 ## Features
 
