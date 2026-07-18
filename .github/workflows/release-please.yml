@@ -19,8 +19,7 @@ jobs:
         id: release
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
-          default-branch: main
-          signoff: 'openfeature-plugin-bot <noreply@github.com>'
+          target-branch: main
     outputs:
       release_created: ${{ steps.release.outputs.release_created }}
       tag_name: ${{ steps.release.outputs.tag_name }}
