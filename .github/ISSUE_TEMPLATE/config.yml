@@ -1,0 +1,11 @@
+blank_issues_enabled: false
+contact_links:
+  - name: Security vulnerability
+    url: https://github.com/jabenedicic/headlamp-plugin-openfeature/security/advisories/new
+    about: Please report security vulnerabilities privately via GitHub private vulnerability reporting, not as a public issue. See SECURITY.md.
+  - name: OpenFeature Operator issues
+    url: https://github.com/open-feature/open-feature-operator/issues
+    about: For bugs in the OpenFeature Operator (not this plugin), report upstream.
+  - name: flagd issues
+    url: https://github.com/open-feature/flagd/issues
+    about: For bugs in flagd (not this plugin), report upstream.

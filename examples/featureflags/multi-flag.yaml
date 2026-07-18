@@ -1,0 +1,33 @@
+# SPDX-License-Identifier: Apache-2.0
+#
+# A FeatureFlag is a flag SET: spec.flagSpec.flags is a map and may hold many flags.
+# This is common in practice — a whole flagd document maps to one resource. The list
+# view summarises such a set as "2 enabled · 1 disabled" rather than blanking the row.
+apiVersion: core.openfeature.dev/v1beta1
+kind: FeatureFlag
+metadata:
+  name: payments-flags
+  namespace: openfeature-demo
+spec:
+  flagSpec:
+    flags:
+      instant-payout:
+        state: ENABLED
+        defaultVariant: "off"
+        variants:
+          "on": true
+          "off": false
+        metadata:
+          description: Enables same-day payouts for eligible accounts.
+      fraud-scoring-v2:
+        state: ENABLED
+        defaultVariant: "off"
+        variants:
+          "on": true
+          "off": false
+      wallet-topup:
+        state: DISABLED
+        defaultVariant: "off"
+        variants:
+          "on": true
+          "off": false

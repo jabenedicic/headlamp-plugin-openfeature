@@ -1,0 +1,14 @@
+# SPDX-License-Identifier: Apache-2.0
+#
+# A standalone flagd deployment. spec.featureFlagSource names a FeatureFlagSource in the
+# same namespace; the plugin renders it as a link.
+apiVersion: core.openfeature.dev/v1beta1
+kind: Flagd
+metadata:
+  name: demo-flagd
+  namespace: openfeature-demo
+spec:
+  featureFlagSource: object-store-source
+  replicas: 2
+  serviceType: ClusterIP
+  serviceAccountName: default

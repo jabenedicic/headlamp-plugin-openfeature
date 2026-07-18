@@ -1,0 +1,11 @@
+# SPDX-License-Identifier: Apache-2.0
+#
+# kind cluster definition for the nightly end-to-end harness. A single-node
+# cluster is enough to host cert-manager, the OpenFeature Operator, and the
+# canned FeatureFlag the smoke flow lists. The cluster name here must stay in
+# sync with the `name:` passed to helm/kind-action in nightly-e2e.yml and with
+# the `kind-<name>` context selected in e2e/flows/list.e2e.ts.
+kind: Cluster
+apiVersion: kind.x-k8s.io/v1alpha4
+nodes:
+  - role: control-plane

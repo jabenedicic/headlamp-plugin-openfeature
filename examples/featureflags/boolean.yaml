@@ -1,0 +1,22 @@
+# SPDX-License-Identifier: Apache-2.0
+#
+# The simplest useful flag: a single boolean with on/off variants.
+apiVersion: core.openfeature.dev/v1beta1
+kind: FeatureFlag
+metadata:
+  name: simple-boolean
+  namespace: openfeature-demo
+spec:
+  flagSpec:
+    flags:
+      new-checkout:
+        state: ENABLED
+        defaultVariant: "off"
+        variants:
+          "on": true
+          "off": false
+        metadata:
+          # A flag's description MUST live under metadata. The CRD schema defines no
+          # top-level description and preserves no unknown fields, so a top-level one is
+          # rejected with a strict decoding error.
+          description: Routes traffic to the rebuilt checkout flow.

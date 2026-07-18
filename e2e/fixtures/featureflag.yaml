@@ -1,0 +1,20 @@
+# SPDX-License-Identifier: Apache-2.0
+#
+# Canned FeatureFlag asserted by the nightly smoke flow (e2e/flows/list.e2e.ts).
+# Valid core.openfeature.dev/v1beta1 boolean flag in its own namespace. The
+# namespace `openfeature-e2e` is created by install-operator.sh before this apply.
+apiVersion: core.openfeature.dev/v1beta1
+kind: FeatureFlag
+metadata:
+  name: sample-flags
+  namespace: openfeature-e2e
+spec:
+  flagSpec:
+    flags:
+      my-boolean-flag:
+        state: ENABLED
+        variants:
+          "on": true
+          "off": false
+        defaultVariant: "off"
+        targeting: {}

@@ -6,8 +6,27 @@ dist/
 build/
 *.tsbuildinfo
 
+# Packaged plugin tarball (produced by `npm run package` / the release workflow)
+*.tar.gz
+*.tgz
+
 # Test / coverage
 coverage/
+.eslintcache
+
+# Playwright / nightly e2e harness output + local plugin staging dir
+playwright-report/
+test-results/
+blob-report/
+.headlamp-plugins/
+
+# Compiled TypeScript emitted into src/ (stray local build artifacts).
+# These would fail `headlamp-plugin lint` (--ext .js) on local runs; fresh CI
+# checkouts are clean so CI is unaffected. Do NOT ignore *.d.ts —
+# src/headlamp-plugin.d.ts is a tracked ambient declaration.
+src/**/*.js
+src/**/*.jsx
+src/**/*.js.map
 
 # Logs
 *.log

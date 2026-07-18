@@ -1,0 +1,57 @@
+# Keep the published tarball lean and reproducible (NFR26): ship only the built
+# plugin (dist/) and its licence/metadata. Everything below is repo/CI scaffolding
+# or source that has no place in the distributed artifact.
+#
+# NOTE: do NOT exclude dist/ (that is what ships) or LICENSE.
+
+# Source — only the built dist/ ships; TypeScript sources and the ambient
+# declaration are build inputs, not runtime artifacts.
+src/
+tsconfig.json
+
+# Tests
+test/
+**/*.test.ts
+**/*.test.tsx
+
+# Nightly e2e harness — never part of the distributed plugin tarball.
+e2e/
+playwright.config.ts
+playwright-report/
+test-results/
+blob-report/
+.headlamp-plugins/
+
+# Source maps
+*.map
+
+# CI / repo config and editor/scaffold cruft
+.github/
+.vscode/
+.size-limit.cjs
+.prettierignore
+.eslintcache
+.nvmrc
+.gitignore
+.npmignore
+AGENTS.md
+
+# BMAD tooling and orchestrator artifacts
+_bmad/
+_bmad-output/
+.bmad-loop/
+.claude/
+.agents/
+
+# Project docs and scaffolding not needed in the runtime package
+docs/
+scripts/
+CONTRIBUTING.md
+CODE_OF_CONDUCT.md
+SECURITY.md
+MAINTAINERS.md
+CHANGELOG.md
+
+# OS / editor cruft
+.DS_Store
+*.swp

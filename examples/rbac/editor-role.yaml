@@ -1,0 +1,28 @@
+# SPDX-License-Identifier: Apache-2.0
+#
+# Full read/write access to every OpenFeature Operator CRD.
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRole
+metadata:
+  name: openfeature-editor
+rules:
+  - apiGroups: ["core.openfeature.dev"]
+    resources:
+      - featureflags
+      - featureflagsources
+      - flagds
+      - inprocessconfigurations
+    verbs: ["get", "list", "watch", "create", "update", "patch", "delete"]
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRoleBinding
+metadata:
+  name: openfeature-editor
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: ClusterRole
+  name: openfeature-editor
+subjects:
+  - kind: Group
+    name: openfeature-editors
+    apiGroup: rbac.authorization.k8s.io

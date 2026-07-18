@@ -1,0 +1,16 @@
+# SPDX-License-Identifier: Apache-2.0
+#
+# Where flagd reads flags from. `sources` is the only required field; provider and the
+# source URI are what identify a source.
+apiVersion: core.openfeature.dev/v1beta1
+kind: FeatureFlagSource
+metadata:
+  name: object-store-source
+  namespace: openfeature-demo
+spec:
+  envVarPrefix: FLAGD
+  logFormat: json
+  probesEnabled: true
+  sources:
+    - source: s3://example-flags-bucket/demo.flagd.json
+      provider: s3

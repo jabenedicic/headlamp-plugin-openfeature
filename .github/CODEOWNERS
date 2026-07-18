@@ -1,0 +1,7 @@
+# Default owners for everything in this repo.
+#
+# On donation to the OpenFeature org this is replaced by a Peribolos-managed
+# team reference, matching open-feature/open-feature-operator:
+#   * @open-feature/<team>-maintainers
+
+* @jabenedicic

@@ -16,4 +16,11 @@
  * limitations under the License.
  */
 
-/// <reference types="@kinvolk/headlamp-plugin" />
+// Single source of truth for static external documentation links the plugin surfaces as
+// remediation. Centralised so the target lives in exactly one place and no literal URL is
+// embedded in JSX. These are documentation links only (rendered as user-clicked anchors),
+// never runtime egress (NFR14).
+
+/** OpenFeature Operator install documentation — the remediation target for the operator-missing state. */
+export const OPERATOR_INSTALL_DOCS_URL =
+  'https://github.com/open-feature/open-feature-operator/blob/main/docs/installation.md';

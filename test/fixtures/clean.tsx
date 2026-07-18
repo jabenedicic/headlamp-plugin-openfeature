@@ -16,4 +16,19 @@
  * limitations under the License.
  */
 
-/// <reference types="@kinvolk/headlamp-plugin" />
+// Clean fixture: only allowed patterns. Doubles as the SPDX-pass fixture.
+// Includes deliberate near-misses that MUST pass: a permitted @mui/material/styles
+// deep import (the negation exception) and unitless theme spacing (not a px literal).
+
+import { Box } from '@mui/material';
+import { styled } from '@mui/material/styles';
+
+const Panel = styled(Box)({});
+
+export function Clean() {
+  return (
+    <Panel sx={{ m: 2, p: 8 }}>
+      <img src="x" alt="ok" />
+    </Panel>
+  );
+}

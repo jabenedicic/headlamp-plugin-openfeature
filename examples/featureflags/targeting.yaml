@@ -1,0 +1,27 @@
+# SPDX-License-Identifier: Apache-2.0
+#
+# Targeting rules are arbitrary flagd JSON logic and are preserved verbatim. The detail
+# view renders them read-only; edit them in the native YAML editor.
+apiVersion: core.openfeature.dev/v1beta1
+kind: FeatureFlag
+metadata:
+  name: targeted-rollout
+  namespace: openfeature-demo
+spec:
+  flagSpec:
+    flags:
+      beta-features:
+        state: ENABLED
+        defaultVariant: "off"
+        variants:
+          "on": true
+          "off": false
+        targeting:
+          if:
+            - in:
+                - var: email
+                - ["beta@example.com"]
+            - "on"
+            - "off"
+        metadata:
+          description: Enables beta features for named testers only.

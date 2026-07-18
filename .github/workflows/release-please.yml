@@ -1,0 +1,58 @@
+name: Run Release Please
+
+on:
+  push:
+    branches:
+      - main
+
+permissions:
+  contents: read
+
+jobs:
+  release-please:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+      pull-requests: write
+    steps:
+      - uses: googleapis/release-please-action@5c625bfb5d1ff62eadeeb3772007f7f66fdcf071 # v4
+        id: release
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+          default-branch: main
+          signoff: 'openfeature-plugin-bot <noreply@github.com>'
+    outputs:
+      release_created: ${{ steps.release.outputs.release_created }}
+      tag_name: ${{ steps.release.outputs.tag_name }}
+
+  package:
+    needs: release-please
+    if: ${{ needs.release-please.outputs.release_created }}
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7.0.0
+      - name: Setup Node
+        uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7.0.0
+        with:
+          node-version-file: '.nvmrc'
+          cache: 'npm'
+      - name: Install dependencies
+        run: npm ci
+      - name: Build and package the plugin
+        run: |
+          npm run build
+          npm run package
+      - name: Generate checksum
+        run: |
+          TARBALL="$(ls ./*.tar.gz | head -1)"
+          shasum -a 256 "$TARBALL" | awk '{print $1}' > "$TARBALL.sha256"
+          echo "TARBALL=$TARBALL" >> "$GITHUB_ENV"
+      - name: Upload the tarball to the release
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          gh release upload "${{ needs.release-please.outputs.tag_name }}" \
+            "$TARBALL" "$TARBALL.sha256" --clobber

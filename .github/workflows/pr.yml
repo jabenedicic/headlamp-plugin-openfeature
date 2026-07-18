@@ -1,0 +1,62 @@
+name: PR Gate
+
+# Runs the full guardrail chain on every pull request and on pushes to main.
+# Each check is a separate step so a failure pinpoints the offending gate, and
+# the whole job is a required check on main (see docs/repo-settings.md).
+on:
+  pull_request:
+  push:
+    branches: [main]
+
+# Only the newest run per ref survives; superseded runs are cancelled.
+concurrency:
+  group: pr-gate-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+permissions:
+  contents: read
+
+jobs:
+  ci:
+    name: ci
+    runs-on: ubuntu-latest
+    # Cap a wedged install/test (e.g. a hung registry) so it cannot run to the
+    # 6-hour default and hold the concurrency slot against later runs.
+    timeout-minutes: 15
+    steps:
+      - name: Checkout
+        uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7.0.0
+
+      - name: Set up Node
+        uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7.0.0
+        with:
+          node-version-file: .nvmrc
+          cache: npm
+
+      # Reproducible install against the committed lockfile (NFR26).
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Lint (ESLint)
+        run: npm run lint
+
+      - name: Format check (Prettier)
+        run: npm run format-check
+
+      - name: Type check (tsc)
+        run: npm run tsc
+
+      - name: Licence allowlist
+        run: npm run licenses
+
+      - name: SPDX headers
+        run: npm run spdx
+
+      - name: Unit tests (Vitest)
+        run: npm run test
+
+      - name: Build
+        run: npm run build
+
+      - name: Bundle size budget
+        run: npm run size

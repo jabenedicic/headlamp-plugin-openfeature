@@ -1,0 +1,31 @@
+{
+  "$schema": "https://raw.githubusercontent.com/googleapis/release-please/main/schemas/config.json",
+  "separate-pull-requests": false,
+  "pull-request-title-pattern": "chore: release${component} ${version}",
+  "packages": {
+    ".": {
+      "release-type": "node",
+      "package-name": "headlamp-openfeature",
+      "include-component-in-tag": false,
+      "draft": false,
+      "prerelease": false,
+      "bump-minor-pre-major": true,
+      "bump-patch-for-minor-pre-major": true,
+      "extra-files": []
+    }
+  },
+  "changelog-sections": [
+    { "type": "feat", "section": "✨ New Features" },
+    { "type": "fix", "section": "🐛 Bug Fixes" },
+    { "type": "chore", "section": "🧹 Chore" },
+    { "type": "docs", "section": "📚 Documentation" },
+    { "type": "perf", "section": "🚀 Performance" },
+    { "type": "build", "section": "🛠️ Build", "hidden": true },
+    { "type": "deps", "section": "📦 Dependencies" },
+    { "type": "ci", "section": "🚦 CI", "hidden": true },
+    { "type": "refactor", "section": "🔄 Refactoring" },
+    { "type": "revert", "section": "🔙 Reverts" },
+    { "type": "style", "section": "🎨 Styling", "hidden": true },
+    { "type": "test", "section": "🧪 Tests", "hidden": true }
+  ]
+}

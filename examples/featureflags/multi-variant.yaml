@@ -1,0 +1,20 @@
+# SPDX-License-Identifier: Apache-2.0
+#
+# Non-boolean variants. Variant values may be strings, numbers, or objects.
+apiVersion: core.openfeature.dev/v1beta1
+kind: FeatureFlag
+metadata:
+  name: multi-variant
+  namespace: openfeature-demo
+spec:
+  flagSpec:
+    flags:
+      theme:
+        state: ENABLED
+        defaultVariant: light
+        variants:
+          light: light
+          dark: dark
+          contrast: high-contrast
+        metadata:
+          description: Selects the UI theme served to a session.
