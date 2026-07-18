@@ -24,7 +24,11 @@
 // numbers, strings and objects all round-trip losslessly and a variant NAME that looks
 // like a boolean (variants {"true": true}) is never coerced.
 
-import { DetailsGrid, NameValueTable, SectionBox } from '@kinvolk/headlamp-plugin/lib/CommonComponents';
+import {
+  DetailsGrid,
+  NameValueTable,
+  SectionBox,
+} from '@kinvolk/headlamp-plugin/lib/CommonComponents';
 import { useParams } from 'react-router-dom';
 import { StateChip } from '../components/StateChip';
 import { FeatureFlagClass } from '../k8s/resources';

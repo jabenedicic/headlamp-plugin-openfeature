@@ -48,7 +48,9 @@ describe('flag-set logic reads a live KubeObject (jsonData), not just a plain bo
   });
 
   it('shows the sole default variant from a single-flag jsonData resource', () => {
-    const item = kubeObjectFlagSet({ only: { state: 'ENABLED', defaultVariant: 'blue', variants: {} } });
+    const item = kubeObjectFlagSet({
+      only: { state: 'ENABLED', defaultVariant: 'blue', variants: {} },
+    });
     expect(getSoleDefaultVariant(item)).toBe('blue');
   });
 });
@@ -180,7 +182,9 @@ describe('listFlags', () => {
 
 describe('getFlagDescription', () => {
   it('reads the description from metadata, which is where the CRD schema allows it', () => {
-    expect(getFlagDescription({ metadata: { description: 'why it exists' } })).toBe('why it exists');
+    expect(getFlagDescription({ metadata: { description: 'why it exists' } })).toBe(
+      'why it exists'
+    );
   });
 
   it('returns undefined when metadata is absent', () => {

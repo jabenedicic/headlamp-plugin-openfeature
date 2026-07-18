@@ -23,7 +23,12 @@
 // The link resolves because the FeatureFlagSource detail route is registered under the
 // kind 'FeatureFlagSource' (see crds/registerCrd.tsx).
 
-import { DetailsGrid, Link, NameValueTable, SectionBox } from '@kinvolk/headlamp-plugin/lib/CommonComponents';
+import {
+  DetailsGrid,
+  Link,
+  NameValueTable,
+  SectionBox,
+} from '@kinvolk/headlamp-plugin/lib/CommonComponents';
 import { useParams } from 'react-router-dom';
 import { FlagdClass } from '../k8s/resources';
 

@@ -19,7 +19,11 @@
 // InProcessConfiguration detail: connection, cache, and the injected env vars. Selector
 // lives here rather than in a list column because it is left unset in practice.
 
-import { DetailsGrid, NameValueTable, SectionBox } from '@kinvolk/headlamp-plugin/lib/CommonComponents';
+import {
+  DetailsGrid,
+  NameValueTable,
+  SectionBox,
+} from '@kinvolk/headlamp-plugin/lib/CommonComponents';
 import { useParams } from 'react-router-dom';
 import { InProcessConfigurationClass } from '../k8s/resources';
 
@@ -31,7 +35,9 @@ function getSpec(item: unknown): Record<string, unknown> {
 /** Connection, cache, and env var sections. */
 function InProcessSections({ item }: { item: unknown }) {
   const spec = getSpec(item);
-  const envVars = Array.isArray(spec.envVars) ? (spec.envVars as Array<Record<string, unknown>>) : [];
+  const envVars = Array.isArray(spec.envVars)
+    ? (spec.envVars as Array<Record<string, unknown>>)
+    : [];
   return (
     <>
       <SectionBox title="Connection">
@@ -42,7 +48,10 @@ function InProcessSections({ item }: { item: unknown }) {
             { name: 'TLS', value: String(spec.tls ?? '—') },
             { name: 'Socket path', value: (spec.socketPath as string) ?? '—' },
             { name: 'Selector', value: (spec.selector as string) ?? '—' },
-            { name: 'Offline flag source path', value: (spec.offlineFlagSourcePath as string) ?? '—' },
+            {
+              name: 'Offline flag source path',
+              value: (spec.offlineFlagSourcePath as string) ?? '—',
+            },
           ]}
         />
       </SectionBox>

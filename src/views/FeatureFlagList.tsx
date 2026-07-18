@@ -24,7 +24,10 @@
 // at any flag count: one flag renders a chip, many render a breakdown. Default is shown
 // only for a single-flag set, since many flags have no single default.
 
-import { CreateResourceButton, ResourceListView } from '@kinvolk/headlamp-plugin/lib/CommonComponents';
+import {
+  CreateResourceButton,
+  ResourceListView,
+} from '@kinvolk/headlamp-plugin/lib/CommonComponents';
 import { StateChip } from '../components/StateChip';
 import { FeatureFlagClass } from '../k8s/resources';
 import { getSoleDefaultVariant, listFlags, summariseFlagSetState } from '../lib/flag-set';

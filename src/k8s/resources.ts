@@ -57,7 +57,11 @@ function makeOpenFeatureClass(kind: string, pluralName: string, singularName: st
 export type OpenFeatureResourceClass = ReturnType<typeof makeOpenFeatureClass>;
 
 /** `FeatureFlag` — a *set* of flags; `spec.flagSpec.flags` is a map, not a single flag. */
-export const FeatureFlagClass = makeOpenFeatureClass('FeatureFlag', FEATURE_FLAG_RESOURCE, 'featureflag');
+export const FeatureFlagClass = makeOpenFeatureClass(
+  'FeatureFlag',
+  FEATURE_FLAG_RESOURCE,
+  'featureflag'
+);
 
 /** `FeatureFlagSource` — where flagd reads flags from (file, s3, kubernetes, grpc, ...). */
 export const FeatureFlagSourceClass = makeOpenFeatureClass(

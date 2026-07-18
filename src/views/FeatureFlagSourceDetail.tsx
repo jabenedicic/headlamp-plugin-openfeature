@@ -19,7 +19,11 @@
 // FeatureFlagSource detail: the sources table plus the sidecar/flagd settings that are
 // actually configured in practice.
 
-import { DetailsGrid, NameValueTable, SectionBox } from '@kinvolk/headlamp-plugin/lib/CommonComponents';
+import {
+  DetailsGrid,
+  NameValueTable,
+  SectionBox,
+} from '@kinvolk/headlamp-plugin/lib/CommonComponents';
 import { useParams } from 'react-router-dom';
 import { FeatureFlagSourceClass } from '../k8s/resources';
 
@@ -31,8 +35,12 @@ function getSpec(item: unknown): Record<string, unknown> {
 /** Sources table plus env vars. */
 function SourceSections({ item }: { item: unknown }) {
   const spec = getSpec(item);
-  const sources = Array.isArray(spec.sources) ? (spec.sources as Array<Record<string, unknown>>) : [];
-  const envVars = Array.isArray(spec.envVars) ? (spec.envVars as Array<Record<string, unknown>>) : [];
+  const sources = Array.isArray(spec.sources)
+    ? (spec.sources as Array<Record<string, unknown>>)
+    : [];
+  const envVars = Array.isArray(spec.envVars)
+    ? (spec.envVars as Array<Record<string, unknown>>)
+    : [];
   return (
     <>
       <SectionBox title="Sources">

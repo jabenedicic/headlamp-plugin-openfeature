@@ -45,13 +45,15 @@ function isEnabled(flag: FlagDefinition): boolean {
 export function listFlags(
   item: FeatureFlag | null | undefined
 ): Array<{ name: string; flag: FlagDefinition }> {
-  return Object.entries(getFlags(item))
-    // A malformed watch-cache read can put a null (or otherwise non-object) value
-    // behind an otherwise-valid key, e.g. `{flags: {a: null}}`. Drop those entries
-    // rather than let a bogus flag reach downstream `flag.state` access and throw.
-    .filter(([, value]) => typeof value === 'object' && value !== null && !Array.isArray(value))
-    .map(([name, flag]) => ({ name, flag }))
-    .sort((a, b) => a.name.localeCompare(b.name));
+  return (
+    Object.entries(getFlags(item))
+      // A malformed watch-cache read can put a null (or otherwise non-object) value
+      // behind an otherwise-valid key, e.g. `{flags: {a: null}}`. Drop those entries
+      // rather than let a bogus flag reach downstream `flag.state` access and throw.
+      .filter(([, value]) => typeof value === 'object' && value !== null && !Array.isArray(value))
+      .map(([name, flag]) => ({ name, flag }))
+      .sort((a, b) => a.name.localeCompare(b.name))
+  );
 }
 
 /** Summarise the set's State so it reads correctly at zero, one, or many flags. */

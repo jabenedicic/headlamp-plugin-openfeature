@@ -61,7 +61,9 @@ describe('ListOrOperatorMissing', () => {
   it('renders the list once the probe confirms the operator is present (200)', async () => {
     requestMock.mockResolvedValue({});
 
-    render(<ListOrOperatorMissing resourceClass={resourceClass} plural="featureflags" List={List} />);
+    render(
+      <ListOrOperatorMissing resourceClass={resourceClass} plural="featureflags" List={List} />
+    );
 
     await waitFor(() => expect(screen.getByText('LIST_RENDERED')).toBeInTheDocument());
     expect(screen.queryByText(OPERATOR_MISSING_HEADING)).not.toBeInTheDocument();
@@ -70,7 +72,9 @@ describe('ListOrOperatorMissing', () => {
   it('renders the OperatorMissing panel when the probe 404s', async () => {
     requestMock.mockRejectedValue({ status: 404 });
 
-    render(<ListOrOperatorMissing resourceClass={resourceClass} plural="featureflags" List={List} />);
+    render(
+      <ListOrOperatorMissing resourceClass={resourceClass} plural="featureflags" List={List} />
+    );
 
     await waitFor(() => expect(screen.getByText(OPERATOR_MISSING_HEADING)).toBeInTheDocument());
     expect(screen.queryByText('LIST_RENDERED')).not.toBeInTheDocument();
@@ -79,7 +83,9 @@ describe('ListOrOperatorMissing', () => {
   it('renders the list (not OperatorMissing) on a non-404 error such as an RBAC 403', async () => {
     requestMock.mockRejectedValue({ status: 403 });
 
-    render(<ListOrOperatorMissing resourceClass={resourceClass} plural="featureflags" List={List} />);
+    render(
+      <ListOrOperatorMissing resourceClass={resourceClass} plural="featureflags" List={List} />
+    );
 
     await waitFor(() => expect(screen.getByText('LIST_RENDERED')).toBeInTheDocument());
     expect(screen.queryByText(OPERATOR_MISSING_HEADING)).not.toBeInTheDocument();

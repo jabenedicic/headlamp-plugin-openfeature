@@ -46,8 +46,8 @@ export function OperatorMissing() {
   return (
     <SectionBox title="OpenFeature Operator not detected">
       <Typography variant="body1" gutterBottom>
-        The <code>core.openfeature.dev</code> custom resource definitions are not present on
-        this cluster, so there are no OpenFeature resources to show.
+        The <code>core.openfeature.dev</code> custom resource definitions are not present on this
+        cluster, so there are no OpenFeature resources to show.
       </Typography>
       <Typography variant="body1">
         Install the OpenFeature Operator to manage feature flags from Headlamp. See the{' '}

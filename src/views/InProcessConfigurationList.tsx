@@ -19,7 +19,10 @@
 // InProcessConfiguration list. Host, port and env vars are what get set in practice;
 // selector is left unset, so it lives on the detail view rather than in a column.
 
-import { CreateResourceButton, ResourceListView } from '@kinvolk/headlamp-plugin/lib/CommonComponents';
+import {
+  CreateResourceButton,
+  ResourceListView,
+} from '@kinvolk/headlamp-plugin/lib/CommonComponents';
 import { InProcessConfigurationClass } from '../k8s/resources';
 
 const EM_DASH = '—';

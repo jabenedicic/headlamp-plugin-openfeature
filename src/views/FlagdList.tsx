@@ -19,7 +19,10 @@
 // Flagd list. spec.featureFlagSource is required and names a FeatureFlagSource in the
 // same namespace; the detail view turns it into a link (Task 10).
 
-import { CreateResourceButton, ResourceListView } from '@kinvolk/headlamp-plugin/lib/CommonComponents';
+import {
+  CreateResourceButton,
+  ResourceListView,
+} from '@kinvolk/headlamp-plugin/lib/CommonComponents';
 import { FlagdClass } from '../k8s/resources';
 
 const EM_DASH = '—';
