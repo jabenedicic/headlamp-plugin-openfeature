@@ -4,6 +4,7 @@
   "packages": {
     ".": {
       "release-type": "node",
+      "release-as": "0.1.0",
       "include-component-in-tag": false,
       "draft": false,
       "prerelease": false,
@@ -15,55 +16,55 @@
   "changelog-sections": [
     {
       "type": "feat",
-      "section": "\u2728 New Features"
+      "section": "✨ New Features"
     },
     {
       "type": "fix",
-      "section": "\ud83d\udc1b Bug Fixes"
+      "section": "🐛 Bug Fixes"
     },
     {
       "type": "chore",
-      "section": "\ud83e\uddf9 Chore",
+      "section": "🧹 Chore",
       "hidden": true
     },
     {
       "type": "docs",
-      "section": "\ud83d\udcda Documentation"
+      "section": "📚 Documentation"
     },
     {
       "type": "perf",
-      "section": "\ud83d\ude80 Performance"
+      "section": "🚀 Performance"
     },
     {
       "type": "build",
-      "section": "\ud83d\udee0\ufe0f Build",
+      "section": "🛠️ Build",
       "hidden": true
     },
     {
       "type": "deps",
-      "section": "\ud83d\udce6 Dependencies"
+      "section": "📦 Dependencies"
     },
     {
       "type": "ci",
-      "section": "\ud83d\udea6 CI",
+      "section": "🚦 CI",
       "hidden": true
     },
     {
       "type": "refactor",
-      "section": "\ud83d\udd04 Refactoring"
+      "section": "🔄 Refactoring"
     },
     {
       "type": "revert",
-      "section": "\ud83d\udd19 Reverts"
+      "section": "🔙 Reverts"
     },
     {
       "type": "style",
-      "section": "\ud83c\udfa8 Styling",
+      "section": "🎨 Styling",
       "hidden": true
     },
     {
       "type": "test",
-      "section": "\ud83e\uddea Tests",
+      "section": "🧪 Tests",
       "hidden": true
     }
   ]
