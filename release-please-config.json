@@ -4,7 +4,7 @@
   "packages": {
     ".": {
       "release-type": "node",
-      "release-as": "0.1.0",
+      "component": "",
       "include-component-in-tag": false,
       "draft": false,
       "prerelease": false,
