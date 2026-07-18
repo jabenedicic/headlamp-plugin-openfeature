@@ -11,11 +11,6 @@
 * flag-set aware list summaries (e.g. "2 enabled · 1 disabled") and per-flag detail views with lossless variant rendering ([e2f5862](https://github.com/jabenedicic/headlamp-plugin-openfeature/commit/e2f5862f0f6de370ad4c7514abe89b6f3da99be1))
 
 
-### 🧹 Chore
-
-* reset release-please baseline to re-cut releases from scratch ([#17](https://github.com/jabenedicic/headlamp-plugin-openfeature/issues/17)) ([20a0d9e](https://github.com/jabenedicic/headlamp-plugin-openfeature/commit/20a0d9ee2f0532dbda1f711742a1b26869de0508))
-
-
 ### 📚 Documentation
 
 * ship reference manifests for all four CRDs, viewer/editor RBAC examples, and a compatibility matrix ([e2f5862](https://github.com/jabenedicic/headlamp-plugin-openfeature/commit/e2f5862f0f6de370ad4c7514abe89b6f3da99be1))
