@@ -5,7 +5,7 @@
     ":gitSignOff",
     ":automergeTypes",
     ":automergeStableNonMajor",
-    "npm:unpublishSafe",
+    "security:minimumReleaseAgeNpm",
     "helpers:pinGitHubActionDigests"
   ],
   "semanticCommits": "enabled",
