@@ -34,6 +34,12 @@ import {
   OPENFEATURE_SIDEBAR_PARENT,
 } from './constants/routes';
 import { registerCrd } from './crds/registerCrd';
+import {
+  FeatureFlagClass,
+  FeatureFlagSourceClass,
+  FlagdClass,
+  InProcessConfigurationClass,
+} from './k8s/resources';
 import { FeatureFlagDetail } from './views/FeatureFlagDetail';
 import { FeatureFlagList } from './views/FeatureFlagList';
 import { FeatureFlagSourceDetail } from './views/FeatureFlagSourceDetail';
@@ -52,7 +58,7 @@ registerSidebarEntry({
 });
 
 registerCrd({
-  kind: 'FeatureFlag',
+  resourceClass: FeatureFlagClass,
   plural: FEATURE_FLAG_RESOURCE,
   label: 'Feature Flags',
   List: FeatureFlagList,
@@ -60,7 +66,7 @@ registerCrd({
 });
 
 registerCrd({
-  kind: 'FeatureFlagSource',
+  resourceClass: FeatureFlagSourceClass,
   plural: FEATURE_FLAG_SOURCE_RESOURCE,
   label: 'Feature Flag Sources',
   List: FeatureFlagSourceList,
@@ -68,7 +74,7 @@ registerCrd({
 });
 
 registerCrd({
-  kind: 'Flagd',
+  resourceClass: FlagdClass,
   plural: FLAGD_RESOURCE,
   label: 'flagd Instances',
   List: FlagdList,
@@ -76,7 +82,7 @@ registerCrd({
 });
 
 registerCrd({
-  kind: 'InProcessConfiguration',
+  resourceClass: InProcessConfigurationClass,
   plural: IN_PROCESS_CONFIGURATION_RESOURCE,
   label: 'In-Process Configurations',
   List: InProcessConfigurationList,
