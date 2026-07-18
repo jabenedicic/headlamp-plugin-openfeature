@@ -1,0 +1,75 @@
+name: Release Assets
+
+# When release-please publishes a GitHub release, build the plugin from the
+# tagged commit and attach the packaged tarball (plus its sha256) so every
+# release carries an installable artifact with no manual build/upload step.
+#
+# release-please publishes the release with a GitHub App token (not the default
+# GITHUB_TOKEN), so this `release: published` workflow is allowed to run — the
+# anti-recursion rule that suppresses GITHUB_TOKEN-triggered events does not
+# apply.
+on:
+  release:
+    types: [published]
+
+permissions:
+  contents: read
+
+jobs:
+  attach-tarball:
+    name: build and attach plugin tarball
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    permissions:
+      contents: write # upload release assets
+    steps:
+      - name: Checkout the released tag
+        uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7.0.0
+        with:
+          ref: ${{ github.event.release.tag_name }}
+
+      - name: Set up Node
+        uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7.0.0
+        with:
+          node-version-file: .nvmrc
+          cache: npm
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Build
+        run: npm run build
+
+      - name: Package the plugin
+        run: npm run package
+
+      # Derive the tarball name from the *tagged* package.json so the attached
+      # artifact always matches the released version (a manual build once
+      # attached a stale 0.1.0 tarball to the 0.1.1 release — deriving the name
+      # here makes that class of mistake impossible).
+      - name: Compute the tarball name and checksum
+        id: artifact
+        run: |
+          name="$(node -p "require('./package.json').name")"
+          version="$(node -p "require('./package.json').version")"
+          tarball="${name}-${version}.tar.gz"
+          if [ ! -f "${tarball}" ]; then
+            echo "::error::expected packaged tarball ${tarball} not found" >&2
+            ls -la ./*.tar.gz || true
+            exit 1
+          fi
+          sha256sum "${tarball}" > "${tarball}.sha256"
+          echo "tarball=${tarball}" >> "${GITHUB_OUTPUT}"
+
+      - name: Attach assets to the release
+        # Pass the tag through the environment (never interpolate event data
+        # straight into the shell) and quote every expansion.
+        env:
+          GH_TOKEN: ${{ github.token }}
+          TAG: ${{ github.event.release.tag_name }}
+          TARBALL: ${{ steps.artifact.outputs.tarball }}
+        run: |
+          gh release upload "${TAG}" \
+            "${TARBALL}" \
+            "${TARBALL}.sha256" \
+            --clobber
