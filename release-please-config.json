@@ -11,8 +11,7 @@
       "prerelease": false,
       "bump-minor-pre-major": true,
       "bump-patch-for-minor-pre-major": true,
-      "extra-files": [],
-      "release-as": "0.1.0"
+      "extra-files": []
     }
   },
   "changelog-sections": [
