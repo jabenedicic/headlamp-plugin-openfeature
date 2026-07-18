@@ -40,9 +40,12 @@ describe('CNCF governance bundle', () => {
     expect(contains('LICENSE', 'END OF TERMS AND CONDITIONS')).toBe(true);
   });
 
-  it('README.md carries the licence badge, compatibility matrix, quickstart, demo placeholder, and governance links', () => {
+  it('README.md carries the licence badge, compatibility matrix link, quickstart, demo placeholder, and governance links', () => {
     expect(contains('README.md', 'License: Apache-2.0')).toBe(true);
-    expect(contains('README.md', 'Compatibility matrix')).toBe(true);
+    expect(contains('README.md', '## Compatibility')).toBe(true);
+    // The compatibility matrix moved to docs/compat-matrix.md (Task 13); README now
+    // links to it rather than embedding a placeholder table.
+    expect(contains('README.md', 'compat-matrix.md')).toBe(true);
     expect(contains('README.md', 'placeholder')).toBe(true);
     expect(contains('README.md', 'Quickstart')).toBe(true);
     expect(contains('README.md', '90-second demo GIF placeholder')).toBe(true);

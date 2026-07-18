@@ -9,18 +9,32 @@ Operator and flagd so platform teams can inspect flag configuration in context.
 
 > Status: early development (`0.1.0`). Interfaces and screens are still evolving.
 
-## Compatibility matrix
+## Compatibility
 
-> **Placeholder — TBD.** Verified version ranges will be published once the
-> plugin has been tested end-to-end against real Operator and flagd releases. Do
-> not treat the rows below as supported combinations yet.
+See [docs/compat-matrix.md](docs/compat-matrix.md) for the Headlamp, OpenFeature
+Operator, and Kubernetes versions each release was tested against.
 
-| Component            | Verified version |
-| -------------------- | ---------------- |
-| Headlamp             | _TBD_            |
-| OpenFeature Operator | _TBD_            |
-| flagd                | _TBD_            |
-| Kubernetes           | _TBD_            |
+## Examples
+
+Ready-to-apply manifests for all four OpenFeature Operator CRDs live in
+[`examples/`](examples/):
+
+```bash
+kubectl create namespace openfeature-demo
+kubectl apply -f examples/featureflags/
+kubectl apply -f examples/featureflagsources/
+kubectl apply -f examples/flagds/
+kubectl apply -f examples/inprocessconfigurations/
+```
+
+`examples/rbac/` holds viewer and editor bindings scoped to the
+`core.openfeature.dev` CRDs.
+
+A `FeatureFlag` holds a *set* of flags: `spec.flagSpec.flags` is a map, so one
+resource may define many flags — see
+[`examples/featureflags/multi-flag.yaml`](examples/featureflags/multi-flag.yaml).
+A flag's description belongs under `metadata.description`; the CRD schema rejects a
+top-level `description`.
 
 ## Demo
 

@@ -1,0 +1,21 @@
+# SPDX-License-Identifier: Apache-2.0
+#
+# In-process evaluation config, injected into annotated workloads by the operator's
+# mutating webhook.
+apiVersion: core.openfeature.dev/v1beta1
+kind: InProcessConfiguration
+metadata:
+  name: demo-in-process
+  namespace: openfeature-demo
+spec:
+  host: flagd-sync.openfeature-demo.svc.cluster.local
+  port: 8015
+  tls: false
+  cache: lru
+  cacheMaxSize: 1000
+  envVarPrefix: FLAGD
+  envVars:
+    - name: DEADLINE_MS
+      value: "50000"
+    - name: RETRY_GRACE_PERIOD
+      value: "120"
