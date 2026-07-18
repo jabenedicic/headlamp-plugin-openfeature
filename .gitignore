@@ -6,6 +6,10 @@ dist/
 build/
 *.tsbuildinfo
 
+# Packaged plugin tarball (produced by `npm run package` / the release workflow)
+*.tar.gz
+*.tgz
+
 # Test / coverage
 coverage/
 .eslintcache

@@ -16,15 +16,9 @@
  * limitations under the License.
  */
 
-// Pinned identifiers for the four core.openfeature.dev CRDs and the RBAC verbs used
-// with AuthVisible. Named consts so a typo cannot silently target the wrong resource
-// or break an access check. React-free, side-effect-free.
-
-/** Kubernetes verbs the plugin checks or performs. */
-export type RbacVerb = 'get' | 'list' | 'create' | 'update' | 'delete';
-
-/** All verbs the plugin may check. */
-export const RBAC_VERBS: readonly RbacVerb[] = ['get', 'list', 'create', 'update', 'delete'];
+// Pinned identifiers for the four core.openfeature.dev CRDs. Named consts so a typo
+// cannot silently target the wrong resource in an API path or an RBAC rule.
+// React-free, side-effect-free.
 
 /** API group shared by every OpenFeature Operator CRD. */
 export const OPENFEATURE_GROUP = 'core.openfeature.dev';
