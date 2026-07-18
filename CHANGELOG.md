@@ -1,5 +1,13 @@
 # Changelog
 
+## [0.1.2](https://github.com/jabenedicic/headlamp-plugin-openfeature/compare/v0.1.1...v0.1.2) (2026-07-18)
+
+
+### 🧹 Chore
+
+* **deps:** update actions/upload-artifact action to v7 ([#8](https://github.com/jabenedicic/headlamp-plugin-openfeature/issues/8)) ([778da09](https://github.com/jabenedicic/headlamp-plugin-openfeature/commit/778da09def82ec4e911d91a543ae539266e62a19))
+* **deps:** update node.js to v24 ([#13](https://github.com/jabenedicic/headlamp-plugin-openfeature/issues/13)) ([d012189](https://github.com/jabenedicic/headlamp-plugin-openfeature/commit/d0121899081395fe3f6d60065c065074faba2a11))
+
 ## [0.1.1](https://github.com/jabenedicic/headlamp-plugin-openfeature/compare/v0.1.0...v0.1.1) (2026-07-18)
 
 
