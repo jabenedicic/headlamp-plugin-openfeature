@@ -11,21 +11,62 @@
       "prerelease": false,
       "bump-minor-pre-major": true,
       "bump-patch-for-minor-pre-major": true,
-      "extra-files": []
+      "extra-files": [],
+      "release-as": "0.1.0"
     }
   },
   "changelog-sections": [
-    { "type": "feat", "section": "✨ New Features" },
-    { "type": "fix", "section": "🐛 Bug Fixes" },
-    { "type": "chore", "section": "🧹 Chore" },
-    { "type": "docs", "section": "📚 Documentation" },
-    { "type": "perf", "section": "🚀 Performance" },
-    { "type": "build", "section": "🛠️ Build", "hidden": true },
-    { "type": "deps", "section": "📦 Dependencies" },
-    { "type": "ci", "section": "🚦 CI", "hidden": true },
-    { "type": "refactor", "section": "🔄 Refactoring" },
-    { "type": "revert", "section": "🔙 Reverts" },
-    { "type": "style", "section": "🎨 Styling", "hidden": true },
-    { "type": "test", "section": "🧪 Tests", "hidden": true }
+    {
+      "type": "feat",
+      "section": "\u2728 New Features"
+    },
+    {
+      "type": "fix",
+      "section": "\ud83d\udc1b Bug Fixes"
+    },
+    {
+      "type": "chore",
+      "section": "\ud83e\uddf9 Chore"
+    },
+    {
+      "type": "docs",
+      "section": "\ud83d\udcda Documentation"
+    },
+    {
+      "type": "perf",
+      "section": "\ud83d\ude80 Performance"
+    },
+    {
+      "type": "build",
+      "section": "\ud83d\udee0\ufe0f Build",
+      "hidden": true
+    },
+    {
+      "type": "deps",
+      "section": "\ud83d\udce6 Dependencies"
+    },
+    {
+      "type": "ci",
+      "section": "\ud83d\udea6 CI",
+      "hidden": true
+    },
+    {
+      "type": "refactor",
+      "section": "\ud83d\udd04 Refactoring"
+    },
+    {
+      "type": "revert",
+      "section": "\ud83d\udd19 Reverts"
+    },
+    {
+      "type": "style",
+      "section": "\ud83c\udfa8 Styling",
+      "hidden": true
+    },
+    {
+      "type": "test",
+      "section": "\ud83e\uddea Tests",
+      "hidden": true
+    }
   ]
 }
