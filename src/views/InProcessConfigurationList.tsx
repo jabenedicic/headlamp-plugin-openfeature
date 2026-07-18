@@ -19,7 +19,7 @@
 // InProcessConfiguration list. Host, port and env vars are what get set in practice;
 // selector is left unset, so it lives on the detail view rather than in a column.
 
-import { ResourceListView } from '@kinvolk/headlamp-plugin/lib/CommonComponents';
+import { CreateResourceButton, ResourceListView } from '@kinvolk/headlamp-plugin/lib/CommonComponents';
 import { InProcessConfigurationClass } from '../k8s/resources';
 
 const EM_DASH = '—';
@@ -35,6 +35,14 @@ export function InProcessConfigurationList() {
     <ResourceListView
       title="In-Process Configurations"
       resourceClass={InProcessConfigurationClass}
+      headerProps={{
+        titleSideActions: [
+          <CreateResourceButton
+            resourceClass={InProcessConfigurationClass}
+            key="create-in-process-configuration"
+          />,
+        ],
+      }}
       columns={[
         'name',
         'namespace',

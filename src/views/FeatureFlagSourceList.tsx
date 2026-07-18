@@ -19,7 +19,7 @@
 // FeatureFlagSource list. `sources` is the only required spec field; port and evaluator
 // are left unset in practice, so provider and the source URI are what identify a source.
 
-import { ResourceListView } from '@kinvolk/headlamp-plugin/lib/CommonComponents';
+import { CreateResourceButton, ResourceListView } from '@kinvolk/headlamp-plugin/lib/CommonComponents';
 import { FeatureFlagSourceClass } from '../k8s/resources';
 
 const EM_DASH = '—';
@@ -41,6 +41,11 @@ export function FeatureFlagSourceList() {
     <ResourceListView
       title="Feature Flag Sources"
       resourceClass={FeatureFlagSourceClass}
+      headerProps={{
+        titleSideActions: [
+          <CreateResourceButton resourceClass={FeatureFlagSourceClass} key="create-feature-flag-source" />,
+        ],
+      }}
       columns={[
         'name',
         'namespace',

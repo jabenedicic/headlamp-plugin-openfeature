@@ -24,7 +24,7 @@
 // at any flag count: one flag renders a chip, many render a breakdown. Default is shown
 // only for a single-flag set, since many flags have no single default.
 
-import { ResourceListView } from '@kinvolk/headlamp-plugin/lib/CommonComponents';
+import { CreateResourceButton, ResourceListView } from '@kinvolk/headlamp-plugin/lib/CommonComponents';
 import { StateChip } from '../components/StateChip';
 import { FeatureFlagClass } from '../k8s/resources';
 import { getSoleDefaultVariant, listFlags, summariseFlagSetState } from '../lib/flag-set';
@@ -53,6 +53,11 @@ export function FeatureFlagList() {
     <ResourceListView
       title="Feature Flags"
       resourceClass={FeatureFlagClass}
+      headerProps={{
+        titleSideActions: [
+          <CreateResourceButton resourceClass={FeatureFlagClass} key="create-feature-flag" />,
+        ],
+      }}
       columns={[
         'name',
         'namespace',
