@@ -1,11 +1,9 @@
 {
   "$schema": "https://raw.githubusercontent.com/googleapis/release-please/main/schemas/config.json",
   "separate-pull-requests": false,
-  "pull-request-title-pattern": "chore: release${component} ${version}",
   "packages": {
     ".": {
       "release-type": "node",
-      "package-name": "headlamp-openfeature",
       "include-component-in-tag": false,
       "draft": false,
       "prerelease": false,
