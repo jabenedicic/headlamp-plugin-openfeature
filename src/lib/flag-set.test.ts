@@ -21,8 +21,10 @@ import type { FeatureFlag } from '../types/feature-flag';
 import {
   getFlagDescription,
   getSoleDefaultVariant,
+  isFlagEnabled,
   listFlags,
   summariseFlagSetState,
+  toggledState,
 } from './flag-set';
 
 function flagSet(flags: unknown): FeatureFlag {
@@ -177,6 +179,42 @@ describe('listFlags', () => {
     const flags = listFlags(item);
     expect(flags.map(f => f.name)).toEqual(['b']);
     expect(flags[0].flag.state).toBe('ENABLED');
+  });
+});
+
+describe('isFlagEnabled', () => {
+  it.each([
+    ['the canonical ENABLED', 'ENABLED', true],
+    ['a lowercase enabled', 'enabled', true],
+    ['a mixed-case Enabled', 'Enabled', true],
+    ['DISABLED', 'DISABLED', false],
+    ['an unrelated string', 'PENDING', false],
+    ['an empty string', '', false],
+    ['an absent state', undefined, false],
+    ['a null state', null, false],
+    ['a non-string state', 42, false],
+    ['an object state', { state: 'ENABLED' }, false],
+  ])('treats %s as %s', (_label, state, expected) => {
+    expect(isFlagEnabled(state)).toBe(expected);
+  });
+});
+
+describe('toggledState', () => {
+  it.each([
+    ['ENABLED flips to DISABLED', 'ENABLED', 'DISABLED'],
+    ['a lowercase enabled flips to DISABLED', 'enabled', 'DISABLED'],
+    ['DISABLED flips to ENABLED', 'DISABLED', 'ENABLED'],
+    ['an unrelated string flips to ENABLED', 'PENDING', 'ENABLED'],
+    ['an empty string flips to ENABLED', '', 'ENABLED'],
+    ['an absent state flips to ENABLED, making it explicit', undefined, 'ENABLED'],
+    ['a non-string state flips to ENABLED', 42, 'ENABLED'],
+  ])('%s', (_label, state, expected) => {
+    expect(toggledState(state)).toBe(expected);
+  });
+
+  it('always writes the canonical uppercase enum', () => {
+    expect(toggledState('enabled')).toBe('DISABLED');
+    expect(toggledState('disabled')).toBe('ENABLED');
   });
 });
 

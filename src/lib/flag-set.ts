@@ -36,9 +36,28 @@ export type FlagSetState =
   /** Many flags — render a count breakdown; no single chip can be honest. */
   | { kind: 'multi'; enabled: number; disabled: number };
 
+/**
+ * A flag's state counts as enabled only when it is exactly ENABLED, case-insensitively.
+ * The single definition of "on", shared by the list summary, the chip, and the toggle so
+ * every surface agrees. Accepts `unknown` because the wire value is untyped: anything that
+ * is not an ENABLED string (absent, empty, DISABLED, a non-string) is not enabled.
+ */
+export function isFlagEnabled(state: unknown): boolean {
+  return typeof state === 'string' && state.toUpperCase() === 'ENABLED';
+}
+
+/**
+ * The canonical state to write when toggling a flag: an enabled flag becomes DISABLED, and
+ * anything else (DISABLED, absent, or a malformed value) becomes ENABLED — making the state
+ * explicit. Always returns the uppercase enum regardless of the incoming casing.
+ */
+export function toggledState(state: unknown): 'ENABLED' | 'DISABLED' {
+  return isFlagEnabled(state) ? 'DISABLED' : 'ENABLED';
+}
+
 /** A flag counts as enabled only when its state is exactly ENABLED, case-insensitively. */
 function isEnabled(flag: FlagDefinition): boolean {
-  return typeof flag.state === 'string' && flag.state.toUpperCase() === 'ENABLED';
+  return isFlagEnabled(flag.state);
 }
 
 /** Every flag in the set with its map key, sorted by name so renders are stable. */
