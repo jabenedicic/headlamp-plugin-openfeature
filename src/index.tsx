@@ -33,6 +33,7 @@ import {
   OPENFEATURE_SIDEBAR_LABEL,
   OPENFEATURE_SIDEBAR_PARENT,
 } from './constants/routes';
+import { registerManagedResourceGuard } from './crds/managedResourceGuard';
 import { registerCrd } from './crds/registerCrd';
 import {
   FeatureFlagClass,
@@ -56,6 +57,10 @@ registerSidebarEntry({
   url: `${OPENFEATURE_ROUTE_BASE}/${FEATURE_FLAG_RESOURCE}`,
   icon: OPENFEATURE_SIDEBAR_ICON,
 });
+
+// GitOps read-only guard: strips Edit/Delete + adds a managed chip on externally-managed
+// OpenFeature resources across every CRD detail view.
+registerManagedResourceGuard();
 
 registerCrd({
   resourceClass: FeatureFlagClass,

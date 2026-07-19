@@ -38,6 +38,7 @@ import { Button } from '@mui/material';
 import { useSnackbar } from 'notistack';
 import { FeatureFlagClass } from '../k8s/resources';
 import { isFlagEnabled, toggledState } from '../lib/flag-set';
+import { isExternallyManaged } from '../lib/gitops-detector';
 import type { FlagDefinition } from '../types/feature-flag';
 
 /**
@@ -140,12 +141,13 @@ export function FlagStateToggleButton({ resource, flagName, flag }: FlagStateTog
  * the user cannot patch featureflags in this namespace.
  */
 export default function FlagStateToggle({ resource, flagName, flag }: FlagStateToggleProps) {
-  // GitOps guard seam (Story 6.1 T6). A per-flag body control cannot be stripped by the
-  // details-view header-actions processor Epic 4 uses for resource-level actions, so
-  // externally-managed read-only must be enforced here. When Epic 4's
-  // `lib/gitops-detector.ts` lands, return `null` for a managed resource:
-  //   if (isExternallyManaged(resource)) return null;
-  // Until then RBAC gating below is the only guard, which is correct for 6.1 shipping first.
+  // GitOps read-only guard. A per-flag body control cannot be stripped by the details-view
+  // header-actions processor (which only rewrites resource-level header actions), so an
+  // externally-managed resource is enforced here: render nothing. The header processor
+  // handles Edit/Delete; this handles the per-flag toggle. RBAC gating (below) is orthogonal.
+  if (isExternallyManaged(resource)) {
+    return null;
+  }
 
   const namespace = resource.jsonData?.metadata?.namespace;
   return (

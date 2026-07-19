@@ -164,4 +164,19 @@ describe('FlagStateToggle (default export)', () => {
     );
     expect(screen.getByRole('button', { name: 'Disable' })).toBeInTheDocument();
   });
+
+  it('renders nothing for an externally-managed (GitOps) resource', () => {
+    const managed = {
+      patch: vi.fn(),
+      jsonData: {
+        metadata: {
+          namespace: 'demo',
+          name: 'flags',
+          annotations: { 'kustomize.toolkit.fluxcd.io/name': 'apps' },
+        },
+      },
+    } as unknown as FeatureFlagResource;
+    render(<FlagStateToggle resource={managed} flagName="a" flag={{ state: 'ENABLED' }} />);
+    expect(screen.queryByRole('button')).not.toBeInTheDocument();
+  });
 });

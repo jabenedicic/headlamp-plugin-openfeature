@@ -28,9 +28,11 @@ import {
   CreateResourceButton,
   ResourceListView,
 } from '@kinvolk/headlamp-plugin/lib/CommonComponents';
+import { ManagedChip } from '../components/ManagedChip';
 import { StateChip } from '../components/StateChip';
 import { FeatureFlagClass } from '../k8s/resources';
 import { getSoleDefaultVariant, listFlags, summariseFlagSetState } from '../lib/flag-set';
+import { externalManagement } from '../lib/gitops-detector';
 
 const EM_DASH = '—';
 
@@ -82,6 +84,13 @@ export function FeatureFlagList() {
           id: 'default',
           label: 'Default',
           getValue: (item: unknown) => getSoleDefaultVariant(item as never) ?? EM_DASH,
+        },
+        {
+          id: 'managed',
+          label: 'Managed by',
+          getValue: (item: unknown) => externalManagement(item).controller ?? EM_DASH,
+          render: (item: unknown) =>
+            externalManagement(item).managed ? <ManagedChip resource={item} /> : <>{EM_DASH}</>,
         },
         'age',
       ]}
