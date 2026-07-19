@@ -103,6 +103,76 @@ export function getSoleDefaultVariant(item: FeatureFlag | null | undefined): str
 }
 
 /**
+ * Parse a variant value typed into the form. Variant values are polymorphic
+ * (boolean/number/string/object), so JSON-parse the raw field and fall back to the raw
+ * string when it is not valid JSON — the write-side mirror of the detail view's lossless
+ * display. A variant NAME of "true"/"false"/"5" is never parsed (only values pass through
+ * here), so a name that looks like a boolean or number is never coerced.
+ */
+export function parseVariantValue(raw: string): unknown {
+  try {
+    return JSON.parse(raw);
+  } catch {
+    return raw;
+  }
+}
+
+/** The set of per-flag fields the form manages. Targeting is deliberately excluded. */
+export interface FlagEdits {
+  /** New description; `null` clears it (RFC 7386 delete of `metadata.description`). */
+  description: string | null;
+  /** The variant name to serve by default. */
+  defaultVariant: string;
+  /** The final kept/edited/added variants (name → typed value). */
+  variants: Record<string, unknown>;
+  /** Variant keys present before but removed in the form; sent as `null` to delete. */
+  removedVariantNames: string[];
+}
+
+/** The scoped merge-patch body for one flag's form-managed fields (never `targeting`). */
+export interface FlagMergePatch {
+  spec: {
+    flagSpec: {
+      flags: Record<
+        string,
+        {
+          metadata: { description: string | null };
+          defaultVariant: string;
+          variants: Record<string, unknown>;
+        }
+      >;
+    };
+  };
+}
+
+/**
+ * Assemble the scoped merge patch for one flag from the form's edits. RFC 7386 matches keys
+ * literally (dotted flag names are safe) and merges recursively, so this touches only the
+ * named flag: description goes to `metadata.description` (preserving other metadata keys),
+ * removed variants are emitted as `null` to delete them, and `targeting` is never included
+ * so opaque JSONLogic rules survive untouched.
+ */
+export function buildFlagMergePatch(flagName: string, edits: FlagEdits): FlagMergePatch {
+  const variants: Record<string, unknown> = { ...edits.variants };
+  for (const name of edits.removedVariantNames) {
+    variants[name] = null;
+  }
+  return {
+    spec: {
+      flagSpec: {
+        flags: {
+          [flagName]: {
+            metadata: { description: edits.description },
+            defaultVariant: edits.defaultVariant,
+            variants,
+          },
+        },
+      },
+    },
+  };
+}
+
+/**
  * A flag's description. It lives at `metadata.description` and nowhere else: the CRD's
  * per-flag schema defines no top-level `description` and sets no
  * x-kubernetes-preserve-unknown-fields, so the API server rejects a top-level one with

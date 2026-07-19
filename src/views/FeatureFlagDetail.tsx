@@ -31,6 +31,7 @@ import {
 } from '@kinvolk/headlamp-plugin/lib/CommonComponents';
 import { Box } from '@mui/material';
 import { useParams } from 'react-router-dom';
+import FlagEditButton from '../components/FlagForm';
 import FlagStateToggle, { type FeatureFlagResource } from '../components/FlagStateToggle';
 import { StateChip } from '../components/StateChip';
 import { FeatureFlagClass } from '../k8s/resources';
@@ -80,7 +81,15 @@ function FlagSections({ item }: { item: unknown }) {
       {flags.map(({ name, flag }) => {
         const description = getFlagDescription(flag);
         return (
-          <SectionBox title={name} key={name}>
+          <SectionBox
+            title={name}
+            key={name}
+            headerProps={{
+              titleSideActions: [
+                <FlagEditButton resource={resource} flagName={name} flag={flag} key="edit" />,
+              ],
+            }}
+          >
             <NameValueTable
               rows={[
                 {

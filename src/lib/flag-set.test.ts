@@ -19,10 +19,12 @@
 import { describe, expect, it } from 'vitest';
 import type { FeatureFlag } from '../types/feature-flag';
 import {
+  buildFlagMergePatch,
   getFlagDescription,
   getSoleDefaultVariant,
   isFlagEnabled,
   listFlags,
+  parseVariantValue,
   summariseFlagSetState,
   toggledState,
 } from './flag-set';
@@ -215,6 +217,86 @@ describe('toggledState', () => {
   it('always writes the canonical uppercase enum', () => {
     expect(toggledState('enabled')).toBe('DISABLED');
     expect(toggledState('disabled')).toBe('ENABLED');
+  });
+});
+
+describe('parseVariantValue', () => {
+  it.each([
+    ['a boolean true', 'true', true],
+    ['a boolean false', 'false', false],
+    ['a number', '5', 5],
+    ['a quoted string', '"on"', 'on'],
+    ['an object', '{"a":1}', { a: 1 }],
+    ['an array', '[1,2]', [1, 2]],
+    ['a bare (invalid-JSON) string, kept verbatim', 'high-contrast', 'high-contrast'],
+    ['an empty string, kept verbatim', '', ''],
+  ])('parses %s', (_label, raw, expected) => {
+    expect(parseVariantValue(raw)).toEqual(expected);
+  });
+});
+
+describe('buildFlagMergePatch', () => {
+  it('assembles a scoped body with metadata, default, and variants', () => {
+    expect(
+      buildFlagMergePatch('a', {
+        description: 'why',
+        defaultVariant: 'on',
+        variants: { on: true, off: false },
+        removedVariantNames: [],
+      })
+    ).toEqual({
+      spec: {
+        flagSpec: {
+          flags: {
+            a: {
+              metadata: { description: 'why' },
+              defaultVariant: 'on',
+              variants: { on: true, off: false },
+            },
+          },
+        },
+      },
+    });
+  });
+
+  it('emits null for a removed variant so the server deletes it', () => {
+    const patch = buildFlagMergePatch('a', {
+      description: null,
+      defaultVariant: 'on',
+      variants: { on: true },
+      removedVariantNames: ['off'],
+    });
+    expect(patch.spec.flagSpec.flags.a.variants).toEqual({ on: true, off: null });
+  });
+
+  it('sends null description to clear it', () => {
+    const patch = buildFlagMergePatch('a', {
+      description: null,
+      defaultVariant: 'on',
+      variants: { on: true },
+      removedVariantNames: [],
+    });
+    expect(patch.spec.flagSpec.flags.a.metadata).toEqual({ description: null });
+  });
+
+  it('never includes targeting in the patch body', () => {
+    const patch = buildFlagMergePatch('a', {
+      description: 'x',
+      defaultVariant: 'on',
+      variants: { on: true },
+      removedVariantNames: [],
+    });
+    expect(patch.spec.flagSpec.flags.a).not.toHaveProperty('targeting');
+  });
+
+  it('uses a dotted flag name literally as the merge-patch key', () => {
+    const patch = buildFlagMergePatch('payments.checkout.new_flow', {
+      description: 'x',
+      defaultVariant: 'on',
+      variants: { on: true },
+      removedVariantNames: [],
+    });
+    expect(Object.keys(patch.spec.flagSpec.flags)).toEqual(['payments.checkout.new_flow']);
   });
 });
 
