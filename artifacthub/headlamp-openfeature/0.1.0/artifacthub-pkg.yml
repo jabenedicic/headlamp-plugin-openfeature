@@ -14,6 +14,8 @@ homeURL: https://github.com/jabenedicic/headlamp-plugin-openfeature
 links:
   - name: source
     url: https://github.com/jabenedicic/headlamp-plugin-openfeature
+  - name: changelog
+    url: https://github.com/jabenedicic/headlamp-plugin-openfeature/blob/main/CHANGELOG.md
   - name: release
     url: https://github.com/jabenedicic/headlamp-plugin-openfeature/releases/tag/headlamp-openfeature-v0.1.0
 keywords:
@@ -29,4 +31,25 @@ annotations:
   headlamp/plugin/archive-url: "https://github.com/jabenedicic/headlamp-plugin-openfeature/releases/download/headlamp-openfeature-v0.1.0/headlamp-openfeature-0.1.0.tar.gz"
   headlamp/plugin/archive-checksum: "sha256:b7b14107b897614a946524fc0643fe5445a77c501fe75cc998043d140c4180e5"
   headlamp/plugin/version-compat: ">=0.43.0"
-  headlamp/plugin/distro-compat: "in-cluster,web,docker-desktop"
+  # Every Headlamp flavour: server (in-cluster/web), the Docker Desktop extension, and the
+  # desktop app on all platforms — the plugin is platform-agnostic client-side code.
+  headlamp/plugin/distro-compat: "in-cluster,web,docker-desktop,app,linux,windows,mac"
+  artifacthub.io/license: Apache-2.0
+  artifacthub.io/install: |
+    Install by placing the plugin's folder in Headlamp's plugins directory and
+    restarting Headlamp:
+
+    1. Download `headlamp-openfeature-0.1.0.tar.gz` from the release and extract it
+       into your Headlamp plugins directory (its location varies by platform).
+    2. Restart Headlamp. An **OpenFeature Operator** entry appears in the sidebar.
+
+    The plugin needs the [OpenFeature Operator](https://github.com/open-feature/open-feature-operator)
+    installed on the target cluster. See Headlamp's
+    [plugin installation guide](https://headlamp.dev/docs/latest/installation/plugins/)
+    for the exact per-platform directory.
+  artifacthub.io/changes: |
+    - browse the four OpenFeature Operator CRDs from a native "OpenFeature Operator" sidebar with list and detail views
+    - create, edit, and delete resources through Headlamp's native Monaco editor and delete confirmation
+    - detect a missing OpenFeature Operator and show install guidance instead of an empty table
+    - flag-set aware list summaries (e.g. "2 enabled · 1 disabled") and per-flag detail views with lossless variant rendering
+    - ship reference manifests for all four CRDs, viewer/editor RBAC examples, and a compatibility matrix

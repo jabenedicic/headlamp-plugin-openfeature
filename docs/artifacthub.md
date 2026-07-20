@@ -14,16 +14,30 @@ release tarballs themselves stay attached to the GitHub releases (see
 
 ```
 artifacthub/
-  artifacthub-repo.yml            # repository metadata (ownership claim)
+  artifacthub-repo.yml            # repository metadata (ownership / Verified Publisher)
+  artifacthub-pkg.template.yml    # the per-version metadata template
+  README.md                       # the package README shown on the package page
   headlamp-openfeature/           # the package
-    0.1.0/artifacthub-pkg.yml     # one directory per released version
-    0.2.0/artifacthub-pkg.yml
+    0.1.0/                        # one directory per released version
+      artifacthub-pkg.yml
+      README.md                   # copied from artifacthub/README.md at generation time
+    0.2.0/
+      artifacthub-pkg.yml
+      README.md
     ...
 ```
 
 Artifact Hub scans the packages path and treats **each version directory** as an
-immutable package version. The minimum supported Headlamp version lives in the
-`headlamp/plugin/version-compat` annotation — **not** in `package.json`.
+immutable package version. Each holds an `artifacthub-pkg.yml` and a `README.md` (rendered on
+the package page). The minimum supported Headlamp version lives in the
+`headlamp/plugin/version-compat` annotation — **not** in `package.json`. The package page's
+**INSTALL** button and **changelog** come from the `artifacthub.io/install` and
+`artifacthub.io/changes` annotations; the Headlamp **flavours** come from
+`headlamp/plugin/distro-compat` (`in-cluster,web,docker-desktop,app,linux,windows,mac`).
+
+**Verified Publisher.** The badge requires the `repositoryID` in `artifacthub-repo.yml` to
+match the ID Artifact Hub assigned to this repository — copy it from the Control Panel
+(Repositories → this repo → the repository's ID), it is **not** an arbitrary UUID.
 
 ## One-time: register the repository
 
@@ -51,10 +65,15 @@ not hand-written ahead of time. When `release-please` tags `headlamp-openfeature
 Artifact Hub re-scans `main` on its own schedule and picks up the new version. Older version
 directories stay in place — Artifact Hub keeps every version discoverable.
 
-**Editing static fields.** Description, keywords, maintainers, and
-`headlamp/plugin/version-compat` (the minimum Headlamp version — keep it in sync with
-[`docs/compat-matrix.md`](./compat-matrix.md)) live in the **template**, not the per-version
-files. Edit the template and they apply to the next release.
+**Editing static fields.** Description, keywords, maintainers, `artifacthub.io/install`,
+`headlamp/plugin/distro-compat`, and `headlamp/plugin/version-compat` (the minimum Headlamp
+version — keep it in sync with [`docs/compat-matrix.md`](./compat-matrix.md)) live in
+[`artifacthub/artifacthub-pkg.template.yml`](../artifacthub/artifacthub-pkg.template.yml), not
+the per-version files. The **package README** lives in
+[`artifacthub/README.md`](../artifacthub/README.md) (use absolute image URLs so they render on
+Artifact Hub); the generator copies it into each version directory. The per-version
+`artifacthub.io/changes` is generated from that release's changelog. Edit the template/README
+and they apply to the next release.
 
 **Manual regeneration** (e.g. to backfill a version), run the generator yourself:
 

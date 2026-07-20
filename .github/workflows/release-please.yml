@@ -87,15 +87,22 @@ jobs:
         run: |
           VERSION="${TAG#headlamp-openfeature-v}"
           ARCHIVE_URL="https://github.com/${{ github.repository }}/releases/download/${TAG}/$(basename "$TARBALL")"
+          # The release's changelog bullets become the artifacthub.io/changes list: take the
+          # release body's "* ..." lines and strip the trailing " ([hash](url))" commit link.
+          # `|| true` so a release with no "* " bullets (empty match under pipefail) leaves
+          # CHANGES empty and the generator simply omits the changes annotation.
+          CHANGES="$(gh release view "$TAG" --json body --jq .body \
+            | grep -E '^\* ' | sed -E 's/ \(\[[0-9a-f]+\].*$//; s/^\* //' || true)"
           node scripts/gen-artifacthub-pkg.mjs \
             --version "$VERSION" \
             --tag "$TAG" \
             --archive-url "$ARCHIVE_URL" \
             --checksum "$(cat "$TARBALL.sha256")" \
-            --created-at "$(gh release view "$TAG" --json publishedAt --jq .publishedAt)"
+            --created-at "$(gh release view "$TAG" --json publishedAt --jq .publishedAt)" \
+            --changes "$CHANGES"
           git config user.name "Jason Benedicic"
           git config user.email "48251655+jabenedicic@users.noreply.github.com"
-          git add "artifacthub/headlamp-openfeature/${VERSION}/artifacthub-pkg.yml"
+          git add "artifacthub/headlamp-openfeature/${VERSION}/"
           if git diff --cached --quiet; then
             echo "Artifact Hub metadata already up to date for ${VERSION}."
           else

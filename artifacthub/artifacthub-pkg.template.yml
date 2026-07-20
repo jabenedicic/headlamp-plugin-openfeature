@@ -22,6 +22,8 @@ homeURL: https://github.com/jabenedicic/headlamp-plugin-openfeature
 links:
   - name: source
     url: https://github.com/jabenedicic/headlamp-plugin-openfeature
+  - name: changelog
+    url: https://github.com/jabenedicic/headlamp-plugin-openfeature/blob/main/CHANGELOG.md
   - name: release
     url: https://github.com/jabenedicic/headlamp-plugin-openfeature/releases/tag/__TAG__
 keywords:
@@ -37,4 +39,20 @@ annotations:
   headlamp/plugin/archive-url: "__ARCHIVE_URL__"
   headlamp/plugin/archive-checksum: "sha256:__CHECKSUM__"
   headlamp/plugin/version-compat: ">=0.43.0"
-  headlamp/plugin/distro-compat: "in-cluster,web,docker-desktop"
+  # Every Headlamp flavour: server (in-cluster/web), the Docker Desktop extension, and the
+  # desktop app on all platforms — the plugin is platform-agnostic client-side code.
+  headlamp/plugin/distro-compat: "in-cluster,web,docker-desktop,app,linux,windows,mac"
+  artifacthub.io/license: Apache-2.0
+  artifacthub.io/install: |
+    Install by placing the plugin's folder in Headlamp's plugins directory and
+    restarting Headlamp:
+
+    1. Download `headlamp-openfeature-__VERSION__.tar.gz` from the release and extract it
+       into your Headlamp plugins directory (its location varies by platform).
+    2. Restart Headlamp. An **OpenFeature Operator** entry appears in the sidebar.
+
+    The plugin needs the [OpenFeature Operator](https://github.com/open-feature/open-feature-operator)
+    installed on the target cluster. See Headlamp's
+    [plugin installation guide](https://headlamp.dev/docs/latest/installation/plugins/)
+    for the exact per-platform directory.
+__CHANGES__
