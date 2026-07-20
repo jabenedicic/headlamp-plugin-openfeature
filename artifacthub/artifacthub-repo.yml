@@ -7,7 +7,7 @@
 # When registering this repository on Artifact Hub (Control Panel -> Repositories ->
 # Add, kind "Headlamp plugins", URL pointing at this directory on the default branch),
 # use the same repositoryID below to claim ownership.
-repositoryID: 1245aa3a-1533-4871-8691-0a710cabe5d1
+repositoryID: 19c04a72-2c23-4c60-bf02-03a5eba782a4
 owners:
   - name: Jason Benedicic
     email: 48251655+jabenedicic@users.noreply.github.com
