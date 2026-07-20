@@ -18,6 +18,8 @@ concurrency:
 
 permissions:
   contents: read
+  # So the failure-reporting step can open/update the tracking issue.
+  issues: write
 
 jobs:
   e2e:
@@ -99,3 +101,23 @@ jobs:
         with:
           name: playwright-report
           path: playwright-report/
+
+      # Surface a failure to the maintainer via a single tracking issue. Deduplicated:
+      # if an open `nightly-e2e` issue already exists, comment on it; otherwise open one.
+      # This never opens a second issue for the same ongoing failure. Uses only trusted
+      # workflow context (no event input), passed via env per injection-safe practice.
+      - name: Report nightly failure
+        if: failure()
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          RUN_URL: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
+        run: |
+          BODY="Nightly E2E failed on $(date -u '+%Y-%m-%d %H:%M UTC'). Run: ${RUN_URL}"
+          EXISTING="$(gh issue list --label nightly-e2e --state open --json number --jq '.[0].number // empty')"
+          if [ -n "$EXISTING" ]; then
+            gh issue comment "$EXISTING" --body "$BODY"
+            echo "Commented on existing nightly-e2e issue #${EXISTING}"
+          else
+            gh issue create --label nightly-e2e --label bug --label ci \
+              --title "Nightly E2E failing" --body "$BODY"
+          fi
