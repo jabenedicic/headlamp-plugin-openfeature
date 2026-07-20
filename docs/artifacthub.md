@@ -29,7 +29,8 @@ immutable package version. The minimum supported Headlamp version lives in the
 
 1. In the Artifact Hub Control Panel: **Repositories → Add**, kind **Headlamp plugins**.
 2. Set the URL to this directory on the default branch, e.g.
-   `https://github.com/jabenedicic/headlamp-plugin-openfeature/tree/main/artifacthub`.
+   `https://github.com/jabenedicic/headlamp-plugin-openfeature/artifacthub` (the packages
+   path — no `/tree/<branch>`; Artifact Hub tracks the default branch).
 3. Ownership is claimed via the `repositoryID` already set in
    [`artifacthub/artifacthub-repo.yml`](../artifacthub/artifacthub-repo.yml).
 

@@ -189,6 +189,46 @@ describe('FlagForm', () => {
     expect(patchedFlag(patch).variants).toHaveProperty('enabled');
   });
 
+  it('trims whitespace from the default so a padded rename still saves', async () => {
+    const patch = vi.fn().mockResolvedValue({});
+    render(
+      <FlagForm
+        resource={fakeResource(patch)}
+        flagName="checkout"
+        flag={baseFlag}
+        open
+        onClose={vi.fn()}
+      />
+    );
+    const names = screen.getAllByLabelText('Name');
+    fireEvent.change(names[0], { target: { value: '  on  ' } });
+    fireEvent.click(screen.getByRole('button', { name: 'Save' }));
+    await waitFor(() => expect(patch).toHaveBeenCalled());
+    expect(patchedFlag(patch).defaultVariant).toBe('on');
+    expect(patchedFlag(patch).variants).toHaveProperty('on');
+  });
+
+  it('emits no bogus removed-variant keys when variants is not a plain object', async () => {
+    const patch = vi.fn().mockResolvedValue({});
+    const flag = {
+      state: 'ENABLED',
+      defaultVariant: '',
+      variants: 'nonsense',
+    } as unknown as FlagDefinition;
+    render(
+      <FlagForm
+        resource={fakeResource(patch)}
+        flagName="checkout"
+        flag={flag}
+        open
+        onClose={vi.fn()}
+      />
+    );
+    fireEvent.click(screen.getByRole('button', { name: 'Save' }));
+    await waitFor(() => expect(patch).toHaveBeenCalled());
+    expect(patchedFlag(patch).variants).toEqual({});
+  });
+
   it('blocks a save whose default names no current variant, without patching', () => {
     const patch = vi.fn().mockResolvedValue({});
     render(

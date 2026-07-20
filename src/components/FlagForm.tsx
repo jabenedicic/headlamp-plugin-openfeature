@@ -110,7 +110,9 @@ function hasTargeting(flag: FlagDefinition): boolean {
 /** The edit dialog. Controlled by `open`; assembles its state fresh each time it mounts. */
 export function FlagForm({ resource, flagName, flag, open, onClose }: FlagFormProps) {
   const { enqueueSnackbar } = useSnackbar();
-  const originalNames = useRef(Object.keys(flag.variants ?? {}));
+  // Derive from initialRows (not Object.keys directly) so the same type-narrowing applies —
+  // a non-object `variants` yields no rows and no bogus removed-variant keys on save.
+  const originalNames = useRef(initialRows(flag).map(row => row.name));
   const nextId = useRef(initialRows(flag).length);
   const [description, setDescription] = useState(getFlagDescription(flag) ?? '');
   const [defaultVariant, setDefaultVariant] = useState(flag.defaultVariant ?? '');
@@ -140,8 +142,11 @@ export function FlagForm({ resource, flagName, flag, open, onClose }: FlagFormPr
       variants[name] = parseVariantValue(row.value);
     }
     const currentNames = new Set(Object.keys(variants));
-    if (defaultVariant.length > 0 && !currentNames.has(defaultVariant)) {
-      setError(`Default variant "${defaultVariant}" is not one of the variants.`);
+    // Trim the default the same way variant names are trimmed, so trailing/leading whitespace
+    // can't cause a false "not one of the variants" failure or write a non-matching default.
+    const trimmedDefault = defaultVariant.trim();
+    if (trimmedDefault.length > 0 && !currentNames.has(trimmedDefault)) {
+      setError(`Default variant "${trimmedDefault}" is not one of the variants.`);
       return;
     }
     const removedVariantNames = originalNames.current.filter(name => !currentNames.has(name));
@@ -152,7 +157,7 @@ export function FlagForm({ resource, flagName, flag, open, onClose }: FlagFormPr
       resource,
       buildFlagMergePatch(flagName, {
         description: description.trim().length > 0 ? description : null,
-        defaultVariant,
+        defaultVariant: trimmedDefault,
         variants,
         removedVariantNames,
       })
