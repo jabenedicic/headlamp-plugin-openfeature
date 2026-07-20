@@ -1,5 +1,7 @@
 # Headlamp OpenFeature Plugin
 
+[![CI](https://img.shields.io/github/actions/workflow/status/jabenedicic/headlamp-plugin-openfeature/pr.yml?branch=main&label=CI)](https://github.com/jabenedicic/headlamp-plugin-openfeature/actions/workflows/pr.yml)
+[![Artifact Hub](https://img.shields.io/endpoint?url=https://artifacthub.io/badge/repository/openfeature)](https://artifacthub.io/packages/search?repo=openfeature)
 [![License: Apache-2.0](https://img.shields.io/badge/License-Apache_2.0-blue.svg)](./LICENSE)
 
 A [Headlamp](https://github.com/kubernetes-sigs/headlamp) plugin for viewing and
@@ -34,8 +36,9 @@ Installing a Headlamp plugin means placing its folder in Headlamp's plugins
 directory and restarting Headlamp:
 
 - **Headlamp desktop** — extract the release tarball into your Headlamp plugins
-  directory (its location varies by platform) and restart the app. From `0.2`
-  onward the plugin will also be installable from the in-app Plugin Catalog.
+  directory (its location varies by platform) and restart the app. The plugin is also
+  published to [Artifact Hub](https://artifacthub.io) for discovery and installation via
+  the in-app Plugin Catalog — see [docs/artifacthub.md](docs/artifacthub.md).
 - **Headlamp server / in-cluster** — extract the tarball into the directory passed
   to the server's `-plugins-dir` flag and restart the server.
 
@@ -75,10 +78,23 @@ top-level `description`.
 
 ## Demo
 
-<!-- 90-second demo GIF placeholder — a recorded walkthrough is coming soon.
-     No image is embedded yet to avoid a broken/404 media link. -->
+**Explore every OpenFeature resource.** Native list and detail screens for all four operator
+CRDs — `FeatureFlag`, `FeatureFlagSource`, `Flagd`, and `InProcessConfiguration` — with a
+flag's state, variants, and read-only targeting preview on its detail.
 
-_A 90-second demo GIF is coming soon._
+![Browsing the four OpenFeature CRD lists and a FeatureFlag detail with variants and targeting](docs/images/openfeature-plugin-explore.gif)
+
+**Manage flags without touching YAML.** A one-click per-flag state toggle, a per-flag edit
+form (description, variants, default), adding a flag to a set from a template, and creating a
+new flag through a guided form — no `flagSpec` knowledge required.
+
+![Toggling a flag's state, editing it through a form, adding a flag, and creating a new one](docs/images/openfeature-plugin-manage.gif)
+
+**RBAC- and GitOps-aware.** Write controls follow the user's RBAC, and a resource reconciled
+by Flux or Argo CD is shown read-only — Edit, Delete, and the per-flag controls are removed and
+a "GitOps managed" chip explains why.
+
+![A Flux-managed FeatureFlag shown read-only with a GitOps managed chip](docs/images/openfeature-plugin-governance.gif)
 
 ## Development
 

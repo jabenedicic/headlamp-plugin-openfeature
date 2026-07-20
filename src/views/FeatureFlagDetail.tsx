@@ -29,7 +29,11 @@ import {
   NameValueTable,
   SectionBox,
 } from '@kinvolk/headlamp-plugin/lib/CommonComponents';
+import { Box } from '@mui/material';
 import { useParams } from 'react-router-dom';
+import AddFlagButton from '../components/AddFlagButton';
+import FlagEditButton from '../components/FlagForm';
+import FlagStateToggle, { type FeatureFlagResource } from '../components/FlagStateToggle';
 import { StateChip } from '../components/StateChip';
 import { FeatureFlagClass } from '../k8s/resources';
 import { getFlagDescription, listFlags } from '../lib/flag-set';
@@ -62,23 +66,49 @@ function hasTargeting(flag: FlagDefinition): boolean {
 
 /** One section per flag in the set. */
 function FlagSections({ item }: { item: unknown }) {
+  // `item` arrives untyped from DetailsGrid.extraSections; narrow it once here to the live
+  // FeatureFlag KubeObject so each flag's toggle has a concrete patch target.
+  const resource = item as FeatureFlagResource;
   const flags = listFlags(item as never);
   if (flags.length === 0) {
     return (
-      <SectionBox title="Flags">
+      <SectionBox
+        title="Flags"
+        headerProps={{ titleSideActions: [<AddFlagButton resource={resource} key="add" />] }}
+      >
         <NameValueTable rows={[{ name: 'Flags', value: 'This resource defines no flags.' }]} />
       </SectionBox>
     );
   }
   return (
     <>
+      <SectionBox
+        title="Flags"
+        headerProps={{ titleSideActions: [<AddFlagButton resource={resource} key="add" />] }}
+      />
       {flags.map(({ name, flag }) => {
         const description = getFlagDescription(flag);
         return (
-          <SectionBox title={name} key={name}>
+          <SectionBox
+            title={name}
+            key={name}
+            headerProps={{
+              titleSideActions: [
+                <FlagEditButton resource={resource} flagName={name} flag={flag} key="edit" />,
+              ],
+            }}
+          >
             <NameValueTable
               rows={[
-                { name: 'State', value: <StateChip state={flag.state} /> },
+                {
+                  name: 'State',
+                  value: (
+                    <Box sx={{ display: 'inline-flex', alignItems: 'center', gap: 1.5 }}>
+                      <StateChip state={flag.state} />
+                      <FlagStateToggle resource={resource} flagName={name} flag={flag} />
+                    </Box>
+                  ),
+                },
                 ...(description ? [{ name: 'Description', value: description }] : []),
                 { name: 'Default variant', value: flag.defaultVariant ?? '—' },
               ]}

@@ -25,6 +25,7 @@
 // React-free, side-effect-free. All access to the untyped flags map goes through
 // getFlags; nothing here reaches into spec.flagSpec.flags directly.
 
+import { OPENFEATURE_GROUP, OPENFEATURE_VERSION } from '../constants/rbac';
 import { type FeatureFlag, type FlagDefinition, getFlags } from '../types/feature-flag';
 
 /** How a flag set's State column should render. */
@@ -36,9 +37,28 @@ export type FlagSetState =
   /** Many flags — render a count breakdown; no single chip can be honest. */
   | { kind: 'multi'; enabled: number; disabled: number };
 
+/**
+ * A flag's state counts as enabled only when it is exactly ENABLED, case-insensitively.
+ * The single definition of "on", shared by the list summary, the chip, and the toggle so
+ * every surface agrees. Accepts `unknown` because the wire value is untyped: anything that
+ * is not an ENABLED string (absent, empty, DISABLED, a non-string) is not enabled.
+ */
+export function isFlagEnabled(state: unknown): boolean {
+  return typeof state === 'string' && state.toUpperCase() === 'ENABLED';
+}
+
+/**
+ * The canonical state to write when toggling a flag: an enabled flag becomes DISABLED, and
+ * anything else (DISABLED, absent, or a malformed value) becomes ENABLED — making the state
+ * explicit. Always returns the uppercase enum regardless of the incoming casing.
+ */
+export function toggledState(state: unknown): 'ENABLED' | 'DISABLED' {
+  return isFlagEnabled(state) ? 'DISABLED' : 'ENABLED';
+}
+
 /** A flag counts as enabled only when its state is exactly ENABLED, case-insensitively. */
 function isEnabled(flag: FlagDefinition): boolean {
-  return typeof flag.state === 'string' && flag.state.toUpperCase() === 'ENABLED';
+  return isFlagEnabled(flag.state);
 }
 
 /** Every flag in the set with its map key, sorted by name so renders are stable. */
@@ -81,6 +101,136 @@ export function getSoleDefaultVariant(item: FeatureFlag | null | undefined): str
   }
   const value = flags[0].flag.defaultVariant;
   return typeof value === 'string' && value.length > 0 ? value : undefined;
+}
+
+/**
+ * Parse a variant value typed into the form. Variant values are polymorphic
+ * (boolean/number/string/object), so JSON-parse the raw field and fall back to the raw
+ * string when it is not valid JSON — the write-side mirror of the detail view's lossless
+ * display. A variant NAME of "true"/"false"/"5" is never parsed (only values pass through
+ * here), so a name that looks like a boolean or number is never coerced.
+ */
+export function parseVariantValue(raw: string): unknown {
+  try {
+    return JSON.parse(raw);
+  } catch {
+    return raw;
+  }
+}
+
+/** The set of per-flag fields the form manages. Targeting is deliberately excluded. */
+export interface FlagEdits {
+  /** New description; `null` clears it (RFC 7386 delete of `metadata.description`). */
+  description: string | null;
+  /** The variant name to serve by default. */
+  defaultVariant: string;
+  /** The final kept/edited/added variants (name → typed value). */
+  variants: Record<string, unknown>;
+  /** Variant keys present before but removed in the form; sent as `null` to delete. */
+  removedVariantNames: string[];
+}
+
+/** The scoped merge-patch body for one flag's form-managed fields (never `targeting`). */
+export interface FlagMergePatch {
+  spec: {
+    flagSpec: {
+      flags: Record<
+        string,
+        {
+          metadata: { description: string | null };
+          defaultVariant: string;
+          variants: Record<string, unknown>;
+        }
+      >;
+    };
+  };
+}
+
+/**
+ * Assemble the scoped merge patch for one flag from the form's edits. RFC 7386 matches keys
+ * literally (dotted flag names are safe) and merges recursively, so this touches only the
+ * named flag: description goes to `metadata.description` (preserving other metadata keys),
+ * removed variants are emitted as `null` to delete them, and `targeting` is never included
+ * so opaque JSONLogic rules survive untouched.
+ */
+export function buildFlagMergePatch(flagName: string, edits: FlagEdits): FlagMergePatch {
+  const variants: Record<string, unknown> = { ...edits.variants };
+  for (const name of edits.removedVariantNames) {
+    variants[name] = null;
+  }
+  return {
+    spec: {
+      flagSpec: {
+        flags: {
+          [flagName]: {
+            metadata: { description: edits.description },
+            defaultVariant: edits.defaultVariant,
+            variants,
+          },
+        },
+      },
+    },
+  };
+}
+
+/** The starter templates the guided-create flows seed a new flag from. */
+export type FlagTemplate = 'boolean' | 'multi-variant';
+
+/** A boolean flag: on/off variants, enabled, defaulting to the "true" variant. */
+export function buildBooleanFlag(): FlagDefinition {
+  return { state: 'ENABLED', defaultVariant: 'true', variants: { true: true, false: false } };
+}
+
+/** A two-way string-variant flag, defaulting to the first — a starting point to refine. */
+export function buildMultiVariantFlag(): FlagDefinition {
+  return {
+    state: 'ENABLED',
+    defaultVariant: 'variant-a',
+    variants: { 'variant-a': 'variant-a', 'variant-b': 'variant-b' },
+  };
+}
+
+/** The flag definition for a chosen template. */
+export function buildTemplateFlag(template: FlagTemplate): FlagDefinition {
+  return template === 'boolean' ? buildBooleanFlag() : buildMultiVariantFlag();
+}
+
+/** True when the resource already holds a flag under `key` (guards additive add). */
+export function flagKeyExists(item: FeatureFlag | null | undefined, key: string): boolean {
+  return Object.prototype.hasOwnProperty.call(getFlags(item), key);
+}
+
+/** An additive merge patch inserting one whole flag entry. */
+export interface AddFlagMergePatch {
+  spec: { flagSpec: { flags: Record<string, FlagDefinition> } };
+}
+
+/** Additive merge patch that inserts one new flag entry; keys match literally (dotted-safe). */
+export function buildAddFlagMergePatch(flagKey: string, flag: FlagDefinition): AddFlagMergePatch {
+  return { spec: { flagSpec: { flags: { [flagKey]: flag } } } };
+}
+
+/** A complete, schema-valid single-flag FeatureFlag CR body for `apiEndpoint.post`. */
+export interface FeatureFlagResourceBody {
+  apiVersion: string;
+  kind: 'FeatureFlag';
+  metadata: { name: string; namespace: string };
+  spec: { flagSpec: { flags: Record<string, FlagDefinition> } };
+}
+
+/** Build the full CR body for the guided "New feature flag" create path. */
+export function buildFeatureFlagResource(
+  name: string,
+  namespace: string,
+  flagKey: string,
+  flag: FlagDefinition
+): FeatureFlagResourceBody {
+  return {
+    apiVersion: `${OPENFEATURE_GROUP}/${OPENFEATURE_VERSION}`,
+    kind: 'FeatureFlag',
+    metadata: { name, namespace },
+    spec: { flagSpec: { flags: { [flagKey]: flag } } },
+  };
 }
 
 /**

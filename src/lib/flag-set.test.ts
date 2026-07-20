@@ -19,10 +19,20 @@
 import { describe, expect, it } from 'vitest';
 import type { FeatureFlag } from '../types/feature-flag';
 import {
+  buildAddFlagMergePatch,
+  buildBooleanFlag,
+  buildFeatureFlagResource,
+  buildFlagMergePatch,
+  buildMultiVariantFlag,
+  buildTemplateFlag,
+  flagKeyExists,
   getFlagDescription,
   getSoleDefaultVariant,
+  isFlagEnabled,
   listFlags,
+  parseVariantValue,
   summariseFlagSetState,
+  toggledState,
 } from './flag-set';
 
 function flagSet(flags: unknown): FeatureFlag {
@@ -177,6 +187,178 @@ describe('listFlags', () => {
     const flags = listFlags(item);
     expect(flags.map(f => f.name)).toEqual(['b']);
     expect(flags[0].flag.state).toBe('ENABLED');
+  });
+});
+
+describe('isFlagEnabled', () => {
+  it.each([
+    ['the canonical ENABLED', 'ENABLED', true],
+    ['a lowercase enabled', 'enabled', true],
+    ['a mixed-case Enabled', 'Enabled', true],
+    ['DISABLED', 'DISABLED', false],
+    ['an unrelated string', 'PENDING', false],
+    ['an empty string', '', false],
+    ['an absent state', undefined, false],
+    ['a null state', null, false],
+    ['a non-string state', 42, false],
+    ['an object state', { state: 'ENABLED' }, false],
+  ])('treats %s as %s', (_label, state, expected) => {
+    expect(isFlagEnabled(state)).toBe(expected);
+  });
+});
+
+describe('toggledState', () => {
+  it.each([
+    ['ENABLED flips to DISABLED', 'ENABLED', 'DISABLED'],
+    ['a lowercase enabled flips to DISABLED', 'enabled', 'DISABLED'],
+    ['DISABLED flips to ENABLED', 'DISABLED', 'ENABLED'],
+    ['an unrelated string flips to ENABLED', 'PENDING', 'ENABLED'],
+    ['an empty string flips to ENABLED', '', 'ENABLED'],
+    ['an absent state flips to ENABLED, making it explicit', undefined, 'ENABLED'],
+    ['a non-string state flips to ENABLED', 42, 'ENABLED'],
+  ])('%s', (_label, state, expected) => {
+    expect(toggledState(state)).toBe(expected);
+  });
+
+  it('always writes the canonical uppercase enum', () => {
+    expect(toggledState('enabled')).toBe('DISABLED');
+    expect(toggledState('disabled')).toBe('ENABLED');
+  });
+});
+
+describe('parseVariantValue', () => {
+  it.each([
+    ['a boolean true', 'true', true],
+    ['a boolean false', 'false', false],
+    ['a number', '5', 5],
+    ['a quoted string', '"on"', 'on'],
+    ['an object', '{"a":1}', { a: 1 }],
+    ['an array', '[1,2]', [1, 2]],
+    ['a bare (invalid-JSON) string, kept verbatim', 'high-contrast', 'high-contrast'],
+    ['an empty string, kept verbatim', '', ''],
+  ])('parses %s', (_label, raw, expected) => {
+    expect(parseVariantValue(raw)).toEqual(expected);
+  });
+});
+
+describe('buildFlagMergePatch', () => {
+  it('assembles a scoped body with metadata, default, and variants', () => {
+    expect(
+      buildFlagMergePatch('a', {
+        description: 'why',
+        defaultVariant: 'on',
+        variants: { on: true, off: false },
+        removedVariantNames: [],
+      })
+    ).toEqual({
+      spec: {
+        flagSpec: {
+          flags: {
+            a: {
+              metadata: { description: 'why' },
+              defaultVariant: 'on',
+              variants: { on: true, off: false },
+            },
+          },
+        },
+      },
+    });
+  });
+
+  it('emits null for a removed variant so the server deletes it', () => {
+    const patch = buildFlagMergePatch('a', {
+      description: null,
+      defaultVariant: 'on',
+      variants: { on: true },
+      removedVariantNames: ['off'],
+    });
+    expect(patch.spec.flagSpec.flags.a.variants).toEqual({ on: true, off: null });
+  });
+
+  it('sends null description to clear it', () => {
+    const patch = buildFlagMergePatch('a', {
+      description: null,
+      defaultVariant: 'on',
+      variants: { on: true },
+      removedVariantNames: [],
+    });
+    expect(patch.spec.flagSpec.flags.a.metadata).toEqual({ description: null });
+  });
+
+  it('never includes targeting in the patch body', () => {
+    const patch = buildFlagMergePatch('a', {
+      description: 'x',
+      defaultVariant: 'on',
+      variants: { on: true },
+      removedVariantNames: [],
+    });
+    expect(patch.spec.flagSpec.flags.a).not.toHaveProperty('targeting');
+  });
+
+  it('uses a dotted flag name literally as the merge-patch key', () => {
+    const patch = buildFlagMergePatch('payments.checkout.new_flow', {
+      description: 'x',
+      defaultVariant: 'on',
+      variants: { on: true },
+      removedVariantNames: [],
+    });
+    expect(Object.keys(patch.spec.flagSpec.flags)).toEqual(['payments.checkout.new_flow']);
+  });
+});
+
+describe('flag templates', () => {
+  it('builds a boolean flag with on/off variants defaulting to true', () => {
+    expect(buildBooleanFlag()).toEqual({
+      state: 'ENABLED',
+      defaultVariant: 'true',
+      variants: { true: true, false: false },
+    });
+  });
+
+  it('builds a multi-variant flag with two string variants, first as default', () => {
+    const flag = buildMultiVariantFlag();
+    expect(flag.state).toBe('ENABLED');
+    expect(flag.defaultVariant).toBe('variant-a');
+    expect(Object.keys(flag.variants ?? {})).toEqual(['variant-a', 'variant-b']);
+  });
+
+  it('selects the template flag by name', () => {
+    expect(buildTemplateFlag('boolean')).toEqual(buildBooleanFlag());
+    expect(buildTemplateFlag('multi-variant')).toEqual(buildMultiVariantFlag());
+  });
+});
+
+describe('flagKeyExists', () => {
+  const resource = { spec: { flagSpec: { flags: { existing: { state: 'ENABLED' } } } } };
+  it('detects an existing key', () => {
+    expect(flagKeyExists(resource, 'existing')).toBe(true);
+  });
+  it('is false for an absent key', () => {
+    expect(flagKeyExists(resource, 'new_flag')).toBe(false);
+  });
+  it('is false against an empty resource', () => {
+    expect(flagKeyExists(null, 'anything')).toBe(false);
+  });
+});
+
+describe('buildAddFlagMergePatch', () => {
+  it('wraps one flag entry additively under its key', () => {
+    const flag = buildBooleanFlag();
+    expect(buildAddFlagMergePatch('team.area.flag', flag)).toEqual({
+      spec: { flagSpec: { flags: { 'team.area.flag': flag } } },
+    });
+  });
+});
+
+describe('buildFeatureFlagResource', () => {
+  it('builds a complete single-flag CR body', () => {
+    const flag = buildBooleanFlag();
+    expect(buildFeatureFlagResource('my-flag', 'demo', 'enabled', flag)).toEqual({
+      apiVersion: 'core.openfeature.dev/v1beta1',
+      kind: 'FeatureFlag',
+      metadata: { name: 'my-flag', namespace: 'demo' },
+      spec: { flagSpec: { flags: { enabled: flag } } },
+    });
   });
 });
 
