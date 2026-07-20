@@ -91,4 +91,6 @@ if (existsSync(README)) {
   const outReadme = join(outDir, 'README.md');
   copyFileSync(README, outReadme);
   console.log(`Wrote ${outReadme}`);
+} else {
+  console.warn(`Warning: ${README} not found — the package page will render without a README.`);
 }

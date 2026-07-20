@@ -89,8 +89,10 @@ jobs:
           ARCHIVE_URL="https://github.com/${{ github.repository }}/releases/download/${TAG}/$(basename "$TARBALL")"
           # The release's changelog bullets become the artifacthub.io/changes list: take the
           # release body's "* ..." lines and strip the trailing " ([hash](url))" commit link.
+          # `|| true` so a release with no "* " bullets (empty match under pipefail) leaves
+          # CHANGES empty and the generator simply omits the changes annotation.
           CHANGES="$(gh release view "$TAG" --json body --jq .body \
-            | grep -E '^\* ' | sed -E 's/ \(\[[0-9a-f]+\].*$//; s/^\* //')"
+            | grep -E '^\* ' | sed -E 's/ \(\[[0-9a-f]+\].*$//; s/^\* //' || true)"
           node scripts/gen-artifacthub-pkg.mjs \
             --version "$VERSION" \
             --tag "$TAG" \
