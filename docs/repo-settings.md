@@ -89,3 +89,39 @@ toolchain legitimately pulls in ~10 other permissive licences (0BSD, Unlicense,
 CC0-1.0, BlueOak-1.0.0, MPL-2.0, EPL-2.0, Python-2.0, …) that would false-fail an
 allowlist while posing no copyleft risk. The denylist catches the licences that
 actually matter without that churn.
+
+## 4. Repository metadata (description, topics, homepage)
+
+The description and topics drive discoverability (GitHub search, the repo header,
+the social card). They live in GitHub settings, not the tree, so apply them with
+`gh` rather than the web UI to keep them documented and repeatable. Keep them in
+sync with the README summary.
+
+```bash
+gh repo edit \
+  --description "A Headlamp plugin for the OpenFeature Operator — view and manage FeatureFlag, FeatureFlagSource, Flagd, and InProcessConfiguration resources from Headlamp's native UI." \
+  --add-topic headlamp \
+  --add-topic openfeature \
+  --add-topic feature-flags \
+  --add-topic flagd \
+  --add-topic kubernetes \
+  --add-topic feature-management \
+  --add-topic cncf \
+  --add-topic kubernetes-plugin
+```
+
+**Homepage:** set it to the Artifact Hub package page once the repository is
+registered there (see [artifacthub.md](./artifacthub.md)); until then leave it
+empty rather than point at a placeholder.
+
+```bash
+# After the Artifact Hub listing is live:
+gh repo edit --homepage "https://artifacthub.io/packages/headlamp/<repo>/headlamp-openfeature"
+```
+
+Verify: `gh repo view --json description,homepageUrl,repositoryTopics`.
+
+> **Donation to OpenFeature.** When this repository transfers to the OpenFeature
+> org, re-run the metadata commands against the new `nameWithOwner`, and update
+> every hard-coded `jabenedicic/headlamp-plugin-openfeature` URL (README,
+> `artifacthub/`, this file) to the new location.

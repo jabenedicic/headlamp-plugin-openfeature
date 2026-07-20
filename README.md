@@ -76,10 +76,10 @@ top-level `description`.
 
 ## Demo
 
-<!-- 90-second demo GIF placeholder — a recorded walkthrough is coming soon.
-     No image is embedded yet to avoid a broken/404 media link. -->
+![Walkthrough: the Feature Flags list, a flag's detail, the one-click state toggle, and the per-flag edit form](docs/images/openfeature-plugin-demo.gif)
 
-_A 90-second demo GIF is coming soon._
+A walkthrough of the list and detail screens, the one-click per-flag state toggle, and
+the per-flag edit form — all through Headlamp's native UI, no CR YAML required.
 
 ## Development
 
