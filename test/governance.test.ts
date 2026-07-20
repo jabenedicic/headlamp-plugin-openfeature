@@ -49,8 +49,11 @@ describe('CNCF governance bundle', () => {
     // to it rather than embedding a placeholder table.
     expect(contains('README.md', 'compat-matrix.md')).toBe(true);
     expect(contains('README.md', '## Examples')).toBe(true);
-    // The Demo section embeds the recorded walkthrough GIF (Story 5.4).
-    expect(contains('README.md', 'docs/images/openfeature-plugin-demo.gif')).toBe(true);
+    // The Demo section embeds the recorded walkthrough GIFs (Story 5.4).
+    expect(contains('README.md', '## Demo')).toBe(true);
+    expect(contains('README.md', 'docs/images/openfeature-plugin-explore.gif')).toBe(true);
+    expect(contains('README.md', 'docs/images/openfeature-plugin-manage.gif')).toBe(true);
+    expect(contains('README.md', 'docs/images/openfeature-plugin-governance.gif')).toBe(true);
     expect(contains('README.md', '## Development')).toBe(true);
     expect(contains('README.md', 'CONTRIBUTING.md')).toBe(true);
     expect(contains('README.md', 'SECURITY.md')).toBe(true);

@@ -76,10 +76,23 @@ top-level `description`.
 
 ## Demo
 
-![Walkthrough: the Feature Flags list, a flag's detail, the one-click state toggle, and the per-flag edit form](docs/images/openfeature-plugin-demo.gif)
+**Explore every OpenFeature resource.** Native list and detail screens for all four operator
+CRDs — `FeatureFlag`, `FeatureFlagSource`, `Flagd`, and `InProcessConfiguration` — with a
+flag's state, variants, and read-only targeting preview on its detail.
 
-A walkthrough of the list and detail screens, the one-click per-flag state toggle, and
-the per-flag edit form — all through Headlamp's native UI, no CR YAML required.
+![Browsing the four OpenFeature CRD lists and a FeatureFlag detail with variants and targeting](docs/images/openfeature-plugin-explore.gif)
+
+**Manage flags without touching YAML.** A one-click per-flag state toggle, a per-flag edit
+form (description, variants, default), adding a flag to a set from a template, and creating a
+new flag through a guided form — no `flagSpec` knowledge required.
+
+![Toggling a flag's state, editing it through a form, adding a flag, and creating a new one](docs/images/openfeature-plugin-manage.gif)
+
+**RBAC- and GitOps-aware.** Write controls follow the user's RBAC, and a resource reconciled
+by Flux or Argo CD is shown read-only — Edit, Delete, and the per-flag controls are removed and
+a "GitOps managed" chip explains why.
+
+![A Flux-managed FeatureFlag shown read-only with a GitOps managed chip](docs/images/openfeature-plugin-governance.gif)
 
 ## Development
 
