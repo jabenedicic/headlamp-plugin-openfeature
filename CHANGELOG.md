@@ -1,5 +1,22 @@
 # Changelog
 
+## [0.2.0](https://github.com/jabenedicic/headlamp-plugin-openfeature/compare/headlamp-openfeature-v0.1.0...headlamp-openfeature-v0.2.0) (2026-07-20)
+
+
+### ✨ New Features
+
+* add a per-flag state toggle to the FeatureFlag detail view ([30be858](https://github.com/jabenedicic/headlamp-plugin-openfeature/commit/30be858f562d462ca37d3902f38aa4ad65bbce19))
+* create flags through guided forms ([30be858](https://github.com/jabenedicic/headlamp-plugin-openfeature/commit/30be858f562d462ca37d3902f38aa4ad65bbce19))
+* edit a single flag through a form ([30be858](https://github.com/jabenedicic/headlamp-plugin-openfeature/commit/30be858f562d462ca37d3902f38aa4ad65bbce19))
+* publish the plugin to Artifact Hub ([30be858](https://github.com/jabenedicic/headlamp-plugin-openfeature/commit/30be858f562d462ca37d3902f38aa4ad65bbce19))
+* RBAC/GitOps awareness and simple per-flag form editing (v0.2) ([30be858](https://github.com/jabenedicic/headlamp-plugin-openfeature/commit/30be858f562d462ca37d3902f38aa4ad65bbce19))
+* reflect RBAC and GitOps external management ([30be858](https://github.com/jabenedicic/headlamp-plugin-openfeature/commit/30be858f562d462ca37d3902f38aa4ad65bbce19))
+
+
+### 📚 Documentation
+
+* demo GIFs, README badges, and a repository-metadata runbook ([30be858](https://github.com/jabenedicic/headlamp-plugin-openfeature/commit/30be858f562d462ca37d3902f38aa4ad65bbce19))
+
 ## 0.1.0 (2026-07-18)
 
 
