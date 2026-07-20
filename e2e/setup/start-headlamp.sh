@@ -43,6 +43,19 @@ else
   npx --yes @kinvolk/headlamp-plugin extract "${REPO_ROOT}" "${PLUGINS_DIR}"
 fi
 
+# --- Stage a container-readable kubeconfig. -----------------------------------
+# The image runs as the non-root `headlamp` user, whose UID differs from the
+# runner's. kind writes ~/.kube/config user-readable only (0600), so mounting
+# ${HOME}/.kube directly gives the container "permission denied" on the config,
+# Headlamp loads no cluster, and every Playwright click times out. Stage a
+# world-readable copy in a temp dir and mount that instead.
+KUBE_STAGE="$(mktemp -d)"
+# mktemp -d is 0700; the container's non-root user must also be able to TRAVERSE the
+# directory (not just read the file), so make the dir world-executable too.
+chmod 755 "${KUBE_STAGE}"
+cp "${HOME}/.kube/config" "${KUBE_STAGE}/config"
+chmod 644 "${KUBE_STAGE}/config"
+
 # --- Start the Headlamp server process. ---------------------------------------
 # kind's kubeconfig embeds the API server as 127.0.0.1:<port>; --network=host on
 # the Linux runner generally makes it reachable from the container. If not, an
@@ -61,7 +74,7 @@ docker rm -f "${CONTAINER_NAME}" >/dev/null 2>&1 || true
 # (HOME=/home/headlamp), so the kubeconfig must land at /home/headlamp/.kube — not /root/.kube.
 CID="$(docker run -d --name "${CONTAINER_NAME}" --network=host \
   --entrypoint /headlamp/headlamp-server \
-  -v "${HOME}/.kube:/home/headlamp/.kube" \
+  -v "${KUBE_STAGE}:/home/headlamp/.kube" \
   -v "${PLUGINS_DIR}:/build/plugins" \
   "${HEADLAMP_IMAGE}" \
   -html-static-dir /headlamp/frontend \
