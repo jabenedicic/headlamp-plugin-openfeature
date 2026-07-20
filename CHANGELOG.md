@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.2.1](https://github.com/jabenedicic/headlamp-plugin-openfeature/compare/headlamp-openfeature-v0.2.0...headlamp-openfeature-v0.2.1) (2026-07-20)
+
+
+### 📚 Documentation
+
+* enrich the Artifact Hub package (README, install, changelog, flavours) ([#34](https://github.com/jabenedicic/headlamp-plugin-openfeature/issues/34)) ([3f6539b](https://github.com/jabenedicic/headlamp-plugin-openfeature/commit/3f6539bb095d1873a40d746a3ee981d2ee83d08c))
+
 ## [0.2.0](https://github.com/jabenedicic/headlamp-plugin-openfeature/compare/headlamp-openfeature-v0.1.0...headlamp-openfeature-v0.2.0) (2026-07-20)
 
 
