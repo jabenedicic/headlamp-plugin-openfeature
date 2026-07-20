@@ -14,6 +14,8 @@ homeURL: https://github.com/jabenedicic/headlamp-plugin-openfeature
 links:
   - name: source
     url: https://github.com/jabenedicic/headlamp-plugin-openfeature
+  - name: changelog
+    url: https://github.com/jabenedicic/headlamp-plugin-openfeature/blob/main/CHANGELOG.md
   - name: release
     url: https://github.com/jabenedicic/headlamp-plugin-openfeature/releases/tag/headlamp-openfeature-v0.2.0
 keywords:
@@ -29,4 +31,27 @@ annotations:
   headlamp/plugin/archive-url: "https://github.com/jabenedicic/headlamp-plugin-openfeature/releases/download/headlamp-openfeature-v0.2.0/headlamp-openfeature-0.2.0.tar.gz"
   headlamp/plugin/archive-checksum: "sha256:e5dc9f487358eb6c9de29d427d72c28d2bfc33eb33a3bb90e58d8c09b61132a4"
   headlamp/plugin/version-compat: ">=0.43.0"
-  headlamp/plugin/distro-compat: "in-cluster,web,docker-desktop"
+  # Every Headlamp flavour: server (in-cluster/web), the Docker Desktop extension, and the
+  # desktop app on all platforms — the plugin is platform-agnostic client-side code.
+  headlamp/plugin/distro-compat: "in-cluster,web,docker-desktop,app,linux,windows,mac"
+  artifacthub.io/license: Apache-2.0
+  artifacthub.io/install: |
+    Install by placing the plugin's folder in Headlamp's plugins directory and
+    restarting Headlamp:
+
+    1. Download `headlamp-openfeature-0.2.0.tar.gz` from the release and extract it
+       into your Headlamp plugins directory (its location varies by platform).
+    2. Restart Headlamp. An **OpenFeature Operator** entry appears in the sidebar.
+
+    The plugin needs the [OpenFeature Operator](https://github.com/open-feature/open-feature-operator)
+    installed on the target cluster. See Headlamp's
+    [plugin installation guide](https://headlamp.dev/docs/latest/installation/plugins/)
+    for the exact per-platform directory.
+  artifacthub.io/changes: |
+    - add a per-flag state toggle to the FeatureFlag detail view
+    - create flags through guided forms
+    - edit a single flag through a form
+    - publish the plugin to Artifact Hub
+    - RBAC/GitOps awareness and simple per-flag form editing (v0.2)
+    - reflect RBAC and GitOps external management
+    - demo GIFs, README badges, and a repository-metadata runbook

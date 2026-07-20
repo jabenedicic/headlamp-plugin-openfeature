@@ -16,12 +16,14 @@
 //     --checksum <sha256-hex> \
 //     --created-at 2026-07-20T12:00:00Z
 
-import { mkdirSync, readFileSync, writeFileSync } from 'node:fs';
+import { copyFileSync, existsSync, mkdirSync, readFileSync, writeFileSync } from 'node:fs';
 import { dirname, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
 
 const REPO_ROOT = join(dirname(fileURLToPath(import.meta.url)), '..');
-const TEMPLATE = join(REPO_ROOT, 'artifacthub', 'artifacthub-pkg.template.yml');
+const ARTIFACTHUB_DIR = join(REPO_ROOT, 'artifacthub');
+const TEMPLATE = join(ARTIFACTHUB_DIR, 'artifacthub-pkg.template.yml');
+const README = join(ARTIFACTHUB_DIR, 'README.md');
 const PACKAGE = 'headlamp-openfeature';
 
 /** Parse `--key value` pairs into an object. */
@@ -49,6 +51,23 @@ if (missing.length > 0) {
 // own prefix is not doubled.
 const checksum = args.checksum.replace(/^sha256:/i, '').trim();
 
+/**
+ * Render the optional `artifacthub.io/changes` annotation from a newline-separated list of
+ * change lines (e.g. the release's changelog bullets). Leading list markers are stripped and
+ * re-emitted as a YAML block scalar under the annotation, indented into the annotations map.
+ * Returns '' when there are no changes, so the __CHANGES__ placeholder line disappears.
+ */
+function renderChanges(raw) {
+  const items = (raw ?? '')
+    .split('\n')
+    .map(line => line.replace(/^\s*[-*]\s*/, '').trim())
+    .filter(Boolean);
+  if (items.length === 0) {
+    return '';
+  }
+  return `  artifacthub.io/changes: |\n${items.map(item => `    - ${item}`).join('\n')}\n`;
+}
+
 const rendered = readFileSync(TEMPLATE, 'utf8')
   .replace(/__VERSION__/g, args.version)
   .replace(/__TAG__/g, args.tag)
@@ -56,10 +75,20 @@ const rendered = readFileSync(TEMPLATE, 'utf8')
   .replace(/__CHECKSUM__/g, checksum)
   .replace(/__CREATED_AT__/g, args['created-at'])
   // Drop the maintainer-only instructions block (delimited by markers) from the output.
-  .replace(/# >>> template-instructions\n[\s\S]*?# <<< template-instructions\n/m, '');
+  .replace(/# >>> template-instructions\n[\s\S]*?# <<< template-instructions\n/m, '')
+  // Inject the per-version changes annotation (or remove the placeholder line entirely).
+  .replace(/__CHANGES__\n?/, renderChanges(args.changes));
 
-const outDir = join(REPO_ROOT, 'artifacthub', PACKAGE, args.version);
+const outDir = join(ARTIFACTHUB_DIR, PACKAGE, args.version);
 mkdirSync(outDir, { recursive: true });
 const outFile = join(outDir, 'artifacthub-pkg.yml');
 writeFileSync(outFile, rendered);
 console.log(`Wrote ${outFile}`);
+
+// Copy the package README alongside the metadata so Artifact Hub renders it on the package
+// page. Artifact Hub reads the README.md from the same version directory.
+if (existsSync(README)) {
+  const outReadme = join(outDir, 'README.md');
+  copyFileSync(README, outReadme);
+  console.log(`Wrote ${outReadme}`);
+}
