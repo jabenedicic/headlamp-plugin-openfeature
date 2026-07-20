@@ -9,5 +9,7 @@
 # use the same repositoryID below to claim ownership.
 repositoryID: 19c04a72-2c23-4c60-bf02-03a5eba782a4
 owners:
+  # This must match the email on the Artifact Hub account that owns the repository (the
+  # GitHub sign-in email), NOT the git-commit noreply identity used elsewhere.
   - name: Jason Benedicic
-    email: 48251655+jabenedicic@users.noreply.github.com
+    email: jason@tdcbconsulting.co.uk
