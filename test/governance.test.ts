@@ -40,7 +40,7 @@ describe('CNCF governance bundle', () => {
     expect(contains('LICENSE', 'END OF TERMS AND CONDITIONS')).toBe(true);
   });
 
-  it('README.md carries the licence badge, feature/install/compatibility/examples sections, demo placeholder, and governance links', () => {
+  it('README.md carries the licence badge, feature/install/compatibility/examples sections, demo walkthrough, and governance links', () => {
     expect(contains('README.md', 'License: Apache-2.0')).toBe(true);
     expect(contains('README.md', '## Features')).toBe(true);
     expect(contains('README.md', '## Installation')).toBe(true);
@@ -49,8 +49,8 @@ describe('CNCF governance bundle', () => {
     // to it rather than embedding a placeholder table.
     expect(contains('README.md', 'compat-matrix.md')).toBe(true);
     expect(contains('README.md', '## Examples')).toBe(true);
-    // The demo GIF is still a placeholder (a later release adds the recorded walkthrough).
-    expect(contains('README.md', '90-second demo GIF placeholder')).toBe(true);
+    // The Demo section embeds the recorded walkthrough GIF (Story 5.4).
+    expect(contains('README.md', 'docs/images/openfeature-plugin-demo.gif')).toBe(true);
     expect(contains('README.md', '## Development')).toBe(true);
     expect(contains('README.md', 'CONTRIBUTING.md')).toBe(true);
     expect(contains('README.md', 'SECURITY.md')).toBe(true);
