@@ -1,5 +1,17 @@
 # Changelog
 
+## [0.2.1](https://github.com/jabenedicic/headlamp-plugin-openfeature/compare/headlamp-openfeature-v0.2.0...headlamp-openfeature-v0.2.1) (2026-07-20)
+
+
+### 🐛 Bug Fixes
+
+* make the e2e kubeconfig readable and report nightly failures ([#44](https://github.com/jabenedicic/headlamp-plugin-openfeature/issues/44)) ([010be29](https://github.com/jabenedicic/headlamp-plugin-openfeature/commit/010be29e24a6e3cc97b25004b0b9d1526c097a92))
+
+
+### 📚 Documentation
+
+* enrich the Artifact Hub package (README, install, changelog, flavours) ([#34](https://github.com/jabenedicic/headlamp-plugin-openfeature/issues/34)) ([3f6539b](https://github.com/jabenedicic/headlamp-plugin-openfeature/commit/3f6539bb095d1873a40d746a3ee981d2ee83d08c))
+
 ## [0.2.0](https://github.com/jabenedicic/headlamp-plugin-openfeature/compare/headlamp-openfeature-v0.1.0...headlamp-openfeature-v0.2.0) (2026-07-20)
 
 
