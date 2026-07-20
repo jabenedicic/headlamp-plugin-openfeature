@@ -44,10 +44,10 @@ yarn-error.log*
 Thumbs.db
 *.swp
 
-# BMAD tooling & bmad-loop orchestrator — kept locally, not part of the plugin
-_bmad/
-_bmad-output/
-.bmad-loop/
-.claude/
+# Local Claude Code / AI-assistant state. The shared baseline is committed:
+# CLAUDE.md (repo root) and .claude/settings.json. Personal and tool-installed bits stay local.
+.claude/settings.local.json
+.claude/skills/
+.claude/commands/
 .agents/
 .github/agents/

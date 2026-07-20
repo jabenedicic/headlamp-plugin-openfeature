@@ -36,10 +36,8 @@ blob-report/
 .npmignore
 AGENTS.md
 
-# BMAD tooling and orchestrator artifacts
-_bmad/
-_bmad-output/
-.bmad-loop/
+# AI-assistant baseline — useful in the repo, not shipped in the package
+CLAUDE.md
 .claude/
 .agents/
 

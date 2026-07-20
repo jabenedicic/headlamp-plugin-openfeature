@@ -1,0 +1,29 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(npm ci)",
+      "Bash(npm run build)",
+      "Bash(npm run lint)",
+      "Bash(npm run format-check)",
+      "Bash(npm run tsc)",
+      "Bash(npm run spdx)",
+      "Bash(npm run licenses)",
+      "Bash(npm run size)",
+      "Bash(npm run package)",
+      "Bash(npm test)",
+      "Bash(npx vitest *)",
+      "Bash(npx tsc *)",
+      "Bash(npx eslint *)",
+      "Bash(git status *)",
+      "Bash(git status)",
+      "Bash(git diff *)",
+      "Bash(git log *)",
+      "Bash(gh pr view *)",
+      "Bash(gh pr list *)",
+      "Bash(gh pr checks *)",
+      "Bash(gh issue view *)",
+      "Bash(gh issue list *)",
+      "Bash(gh run view *)"
+    ]
+  }
+}
