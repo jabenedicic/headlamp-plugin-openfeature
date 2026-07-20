@@ -1,8 +1,15 @@
 {
   "permissions": {
     "allow": [
-      "Bash(npm run *)",
-      "Bash(npm test *)",
+      "Bash(npm ci)",
+      "Bash(npm run build)",
+      "Bash(npm run lint)",
+      "Bash(npm run format-check)",
+      "Bash(npm run tsc)",
+      "Bash(npm run spdx)",
+      "Bash(npm run licenses)",
+      "Bash(npm run size)",
+      "Bash(npm run package)",
       "Bash(npm test)",
       "Bash(npx vitest *)",
       "Bash(npx tsc *)",
