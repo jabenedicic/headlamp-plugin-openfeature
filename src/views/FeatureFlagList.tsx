@@ -28,6 +28,7 @@ import {
   CreateResourceButton,
   ResourceListView,
 } from '@kinvolk/headlamp-plugin/lib/CommonComponents';
+import CreateFeatureFlagButton from '../components/CreateFeatureFlagButton';
 import { ManagedChip } from '../components/ManagedChip';
 import { StateChip } from '../components/StateChip';
 import { FeatureFlagClass } from '../k8s/resources';
@@ -60,6 +61,7 @@ export function FeatureFlagList() {
       resourceClass={FeatureFlagClass}
       headerProps={{
         titleSideActions: [
+          <CreateFeatureFlagButton key="guided-create-feature-flag" />,
           <CreateResourceButton resourceClass={FeatureFlagClass} key="create-feature-flag" />,
         ],
       }}

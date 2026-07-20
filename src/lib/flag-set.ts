@@ -25,6 +25,7 @@
 // React-free, side-effect-free. All access to the untyped flags map goes through
 // getFlags; nothing here reaches into spec.flagSpec.flags directly.
 
+import { OPENFEATURE_GROUP, OPENFEATURE_VERSION } from '../constants/rbac';
 import { type FeatureFlag, type FlagDefinition, getFlags } from '../types/feature-flag';
 
 /** How a flag set's State column should render. */
@@ -169,6 +170,66 @@ export function buildFlagMergePatch(flagName: string, edits: FlagEdits): FlagMer
         },
       },
     },
+  };
+}
+
+/** The starter templates the guided-create flows seed a new flag from. */
+export type FlagTemplate = 'boolean' | 'multi-variant';
+
+/** A boolean flag: on/off variants, enabled, defaulting to the "true" variant. */
+export function buildBooleanFlag(): FlagDefinition {
+  return { state: 'ENABLED', defaultVariant: 'true', variants: { true: true, false: false } };
+}
+
+/** A two-way string-variant flag, defaulting to the first — a starting point to refine. */
+export function buildMultiVariantFlag(): FlagDefinition {
+  return {
+    state: 'ENABLED',
+    defaultVariant: 'variant-a',
+    variants: { 'variant-a': 'variant-a', 'variant-b': 'variant-b' },
+  };
+}
+
+/** The flag definition for a chosen template. */
+export function buildTemplateFlag(template: FlagTemplate): FlagDefinition {
+  return template === 'boolean' ? buildBooleanFlag() : buildMultiVariantFlag();
+}
+
+/** True when the resource already holds a flag under `key` (guards additive add). */
+export function flagKeyExists(item: FeatureFlag | null | undefined, key: string): boolean {
+  return Object.prototype.hasOwnProperty.call(getFlags(item), key);
+}
+
+/** An additive merge patch inserting one whole flag entry. */
+export interface AddFlagMergePatch {
+  spec: { flagSpec: { flags: Record<string, FlagDefinition> } };
+}
+
+/** Additive merge patch that inserts one new flag entry; keys match literally (dotted-safe). */
+export function buildAddFlagMergePatch(flagKey: string, flag: FlagDefinition): AddFlagMergePatch {
+  return { spec: { flagSpec: { flags: { [flagKey]: flag } } } };
+}
+
+/** A complete, schema-valid single-flag FeatureFlag CR body for `apiEndpoint.post`. */
+export interface FeatureFlagResourceBody {
+  apiVersion: string;
+  kind: 'FeatureFlag';
+  metadata: { name: string; namespace: string };
+  spec: { flagSpec: { flags: Record<string, FlagDefinition> } };
+}
+
+/** Build the full CR body for the guided "New feature flag" create path. */
+export function buildFeatureFlagResource(
+  name: string,
+  namespace: string,
+  flagKey: string,
+  flag: FlagDefinition
+): FeatureFlagResourceBody {
+  return {
+    apiVersion: `${OPENFEATURE_GROUP}/${OPENFEATURE_VERSION}`,
+    kind: 'FeatureFlag',
+    metadata: { name, namespace },
+    spec: { flagSpec: { flags: { [flagKey]: flag } } },
   };
 }
 

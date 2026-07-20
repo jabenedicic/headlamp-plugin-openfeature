@@ -19,7 +19,13 @@
 import { describe, expect, it } from 'vitest';
 import type { FeatureFlag } from '../types/feature-flag';
 import {
+  buildAddFlagMergePatch,
+  buildBooleanFlag,
+  buildFeatureFlagResource,
   buildFlagMergePatch,
+  buildMultiVariantFlag,
+  buildTemplateFlag,
+  flagKeyExists,
   getFlagDescription,
   getSoleDefaultVariant,
   isFlagEnabled,
@@ -297,6 +303,62 @@ describe('buildFlagMergePatch', () => {
       removedVariantNames: [],
     });
     expect(Object.keys(patch.spec.flagSpec.flags)).toEqual(['payments.checkout.new_flow']);
+  });
+});
+
+describe('flag templates', () => {
+  it('builds a boolean flag with on/off variants defaulting to true', () => {
+    expect(buildBooleanFlag()).toEqual({
+      state: 'ENABLED',
+      defaultVariant: 'true',
+      variants: { true: true, false: false },
+    });
+  });
+
+  it('builds a multi-variant flag with two string variants, first as default', () => {
+    const flag = buildMultiVariantFlag();
+    expect(flag.state).toBe('ENABLED');
+    expect(flag.defaultVariant).toBe('variant-a');
+    expect(Object.keys(flag.variants ?? {})).toEqual(['variant-a', 'variant-b']);
+  });
+
+  it('selects the template flag by name', () => {
+    expect(buildTemplateFlag('boolean')).toEqual(buildBooleanFlag());
+    expect(buildTemplateFlag('multi-variant')).toEqual(buildMultiVariantFlag());
+  });
+});
+
+describe('flagKeyExists', () => {
+  const resource = { spec: { flagSpec: { flags: { existing: { state: 'ENABLED' } } } } };
+  it('detects an existing key', () => {
+    expect(flagKeyExists(resource, 'existing')).toBe(true);
+  });
+  it('is false for an absent key', () => {
+    expect(flagKeyExists(resource, 'new_flag')).toBe(false);
+  });
+  it('is false against an empty resource', () => {
+    expect(flagKeyExists(null, 'anything')).toBe(false);
+  });
+});
+
+describe('buildAddFlagMergePatch', () => {
+  it('wraps one flag entry additively under its key', () => {
+    const flag = buildBooleanFlag();
+    expect(buildAddFlagMergePatch('team.area.flag', flag)).toEqual({
+      spec: { flagSpec: { flags: { 'team.area.flag': flag } } },
+    });
+  });
+});
+
+describe('buildFeatureFlagResource', () => {
+  it('builds a complete single-flag CR body', () => {
+    const flag = buildBooleanFlag();
+    expect(buildFeatureFlagResource('my-flag', 'demo', 'enabled', flag)).toEqual({
+      apiVersion: 'core.openfeature.dev/v1beta1',
+      kind: 'FeatureFlag',
+      metadata: { name: 'my-flag', namespace: 'demo' },
+      spec: { flagSpec: { flags: { enabled: flag } } },
+    });
   });
 });
 

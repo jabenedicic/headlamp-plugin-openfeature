@@ -31,6 +31,7 @@ import {
 } from '@kinvolk/headlamp-plugin/lib/CommonComponents';
 import { Box } from '@mui/material';
 import { useParams } from 'react-router-dom';
+import AddFlagButton from '../components/AddFlagButton';
 import FlagEditButton from '../components/FlagForm';
 import FlagStateToggle, { type FeatureFlagResource } from '../components/FlagStateToggle';
 import { StateChip } from '../components/StateChip';
@@ -71,13 +72,20 @@ function FlagSections({ item }: { item: unknown }) {
   const flags = listFlags(item as never);
   if (flags.length === 0) {
     return (
-      <SectionBox title="Flags">
+      <SectionBox
+        title="Flags"
+        headerProps={{ titleSideActions: [<AddFlagButton resource={resource} key="add" />] }}
+      >
         <NameValueTable rows={[{ name: 'Flags', value: 'This resource defines no flags.' }]} />
       </SectionBox>
     );
   }
   return (
     <>
+      <SectionBox
+        title="Flags"
+        headerProps={{ titleSideActions: [<AddFlagButton resource={resource} key="add" />] }}
+      />
       {flags.map(({ name, flag }) => {
         const description = getFlagDescription(flag);
         return (
