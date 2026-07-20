@@ -1,5 +1,7 @@
 # Headlamp OpenFeature Plugin
 
+[![CI](https://img.shields.io/github/actions/workflow/status/jabenedicic/headlamp-plugin-openfeature/pr.yml?branch=main&label=CI)](https://github.com/jabenedicic/headlamp-plugin-openfeature/actions/workflows/pr.yml)
+[![Artifact Hub](https://img.shields.io/endpoint?url=https://artifacthub.io/badge/repository/openfeature)](https://artifacthub.io/packages/search?repo=openfeature)
 [![License: Apache-2.0](https://img.shields.io/badge/License-Apache_2.0-blue.svg)](./LICENSE)
 
 A [Headlamp](https://github.com/kubernetes-sigs/headlamp) plugin for viewing and
