@@ -61,8 +61,8 @@ function CreateDialog({ onClose }: { onClose: () => void }) {
       setError('Name must be a lowercase RFC 1123 label (letters, digits, hyphens).');
       return;
     }
-    if (trimmedNs.length === 0) {
-      setError('Enter a namespace.');
+    if (!RFC1123_LABEL.test(trimmedNs)) {
+      setError('Namespace must be a lowercase RFC 1123 label (letters, digits, hyphens).');
       return;
     }
     if (key.length === 0) {

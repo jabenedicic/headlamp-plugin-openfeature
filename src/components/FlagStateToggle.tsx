@@ -36,6 +36,7 @@
 import { AuthVisible } from '@kinvolk/headlamp-plugin/lib/CommonComponents';
 import { Button } from '@mui/material';
 import { useSnackbar } from 'notistack';
+import { useState } from 'react';
 import { FeatureFlagClass } from '../k8s/resources';
 import { isFlagEnabled, toggledState } from '../lib/flag-set';
 import { isExternallyManaged } from '../lib/gitops-detector';
@@ -96,7 +97,11 @@ function patchFlagState(
     namespace: string | undefined,
     name: string | undefined
   ) => Promise<unknown>;
-  return mergePatch(body, resource.jsonData?.metadata?.namespace, resource.jsonData?.metadata?.name);
+  return mergePatch(
+    body,
+    resource.jsonData?.metadata?.namespace,
+    resource.jsonData?.metadata?.name
+  );
 }
 
 /**
@@ -106,10 +111,12 @@ function patchFlagState(
  */
 export function FlagStateToggleButton({ resource, flagName, flag }: FlagStateToggleProps) {
   const { enqueueSnackbar } = useSnackbar();
+  const [pending, setPending] = useState(false);
   const enabled = isFlagEnabled(flag.state);
   const nextState = toggledState(flag.state);
 
   function handleClick() {
+    setPending(true);
     patchFlagState(resource, flagName, nextState)
       .then(() => {
         enqueueSnackbar(`Flag "${flagName}" ${nextState === 'ENABLED' ? 'enabled' : 'disabled'}`, {
@@ -119,7 +126,10 @@ export function FlagStateToggleButton({ resource, flagName, flag }: FlagStateTog
       .catch((error: unknown) => {
         const message = error instanceof Error ? error.message : String(error);
         enqueueSnackbar(`Could not update flag "${flagName}": ${message}`, { variant: 'error' });
-      });
+      })
+      // Re-enable in finally: the watch may not have repainted yet, but a second in-flight
+      // patch would only race the first. One click, one request.
+      .finally(() => setPending(false));
   }
 
   return (
@@ -128,6 +138,7 @@ export function FlagStateToggleButton({ resource, flagName, flag }: FlagStateTog
       size="small"
       color={enabled ? 'warning' : 'success'}
       onClick={handleClick}
+      disabled={pending}
       title={enabled ? `Disable flag "${flagName}"` : `Enable flag "${flagName}"`}
     >
       {enabled ? 'Disable' : 'Enable'}

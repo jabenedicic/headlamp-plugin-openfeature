@@ -44,7 +44,10 @@ vi.mock('../k8s/resources', () => ({
 }));
 
 import type { FlagDefinition } from '../types/feature-flag';
-import FlagStateToggle, { type FeatureFlagResource, FlagStateToggleButton } from './FlagStateToggle';
+import FlagStateToggle, {
+  type FeatureFlagResource,
+  FlagStateToggleButton,
+} from './FlagStateToggle';
 
 /** Build a fake live KubeObject whose instance `patch` is a controllable spy. */
 function fakeResource(patch: ReturnType<typeof vi.fn>, namespace = 'demo', name = 'flags') {
@@ -79,10 +82,14 @@ describe('FlagStateToggleButton', () => {
     expect(screen.getByRole('button', { name: 'Enable' })).toBeInTheDocument();
   });
 
-  it('patches only the target flag\'s state leaf when disabling an enabled flag', async () => {
+  it("patches only the target flag's state leaf when disabling an enabled flag", async () => {
     const patch = vi.fn().mockResolvedValue({});
     render(
-      <FlagStateToggleButton resource={fakeResource(patch)} flagName="a" flag={{ state: 'ENABLED' }} />
+      <FlagStateToggleButton
+        resource={fakeResource(patch)}
+        flagName="a"
+        flag={{ state: 'ENABLED' }}
+      />
     );
     fireEvent.click(screen.getByRole('button', { name: 'Disable' }));
     expect(patch).toHaveBeenCalledTimes(1);
@@ -109,7 +116,11 @@ describe('FlagStateToggleButton', () => {
   it('writes the canonical uppercase enum from a lowercase incoming state', () => {
     const patch = vi.fn().mockResolvedValue({});
     render(
-      <FlagStateToggleButton resource={fakeResource(patch)} flagName="a" flag={{ state: 'enabled' }} />
+      <FlagStateToggleButton
+        resource={fakeResource(patch)}
+        flagName="a"
+        flag={{ state: 'enabled' }}
+      />
     );
     // lowercase "enabled" is recognised as enabled → button reads Disable → writes DISABLED
     fireEvent.click(screen.getByRole('button', { name: 'Disable' }));
@@ -121,7 +132,11 @@ describe('FlagStateToggleButton', () => {
   it('shows a success snackbar naming the flag and new state', async () => {
     const patch = vi.fn().mockResolvedValue({});
     render(
-      <FlagStateToggleButton resource={fakeResource(patch)} flagName="a" flag={{ state: 'ENABLED' }} />
+      <FlagStateToggleButton
+        resource={fakeResource(patch)}
+        flagName="a"
+        flag={{ state: 'ENABLED' }}
+      />
     );
     fireEvent.click(screen.getByRole('button', { name: 'Disable' }));
     await waitFor(() =>
@@ -132,7 +147,11 @@ describe('FlagStateToggleButton', () => {
   it('shows an error snackbar with the server message on a rejected patch', async () => {
     const patch = vi.fn().mockRejectedValue(new Error('409 conflict'));
     render(
-      <FlagStateToggleButton resource={fakeResource(patch)} flagName="a" flag={{ state: 'DISABLED' }} />
+      <FlagStateToggleButton
+        resource={fakeResource(patch)}
+        flagName="a"
+        flag={{ state: 'DISABLED' }}
+      />
     );
     fireEvent.click(screen.getByRole('button', { name: 'Enable' }));
     await waitFor(() =>
@@ -140,6 +159,23 @@ describe('FlagStateToggleButton', () => {
         variant: 'error',
       })
     );
+  });
+
+  it('disables the button while a patch is in flight, preventing a double submit', () => {
+    // A patch that never resolves keeps the button in its pending state.
+    const patch = vi.fn(() => new Promise<unknown>(() => {}));
+    render(
+      <FlagStateToggleButton
+        resource={fakeResource(patch)}
+        flagName="a"
+        flag={{ state: 'ENABLED' }}
+      />
+    );
+    const button = screen.getByRole('button', { name: 'Disable' });
+    fireEvent.click(button);
+    expect(button).toBeDisabled();
+    fireEvent.click(button);
+    expect(patch).toHaveBeenCalledTimes(1);
   });
 
   it('falls back to the static apiEndpoint.patch when the instance lacks patch', async () => {

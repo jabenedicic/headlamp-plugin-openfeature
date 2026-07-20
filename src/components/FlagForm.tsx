@@ -94,7 +94,11 @@ function patchFlag(resource: FeatureFlagResource, body: object): Promise<unknown
     namespace: string | undefined,
     name: string | undefined
   ) => Promise<unknown>;
-  return mergePatch(body, resource.jsonData?.metadata?.namespace, resource.jsonData?.metadata?.name);
+  return mergePatch(
+    body,
+    resource.jsonData?.metadata?.namespace,
+    resource.jsonData?.metadata?.name
+  );
 }
 
 /** Does this flag carry targeting rules worth showing read-only? */
@@ -165,7 +169,13 @@ export function FlagForm({ resource, flagName, flag, open, onClose }: FlagFormPr
   }
 
   return (
-    <Dialog open={open} onClose={onClose} fullWidth maxWidth="sm" aria-label={`Edit flag ${flagName}`}>
+    <Dialog
+      open={open}
+      onClose={onClose}
+      fullWidth
+      maxWidth="sm"
+      aria-label={`Edit flag ${flagName}`}
+    >
       <DialogTitle>Edit flag &quot;{flagName}&quot;</DialogTitle>
       <DialogContent>
         <TextField
@@ -195,7 +205,16 @@ export function FlagForm({ resource, flagName, flag, open, onClose }: FlagFormPr
                 <TextField
                   label="Name"
                   value={row.name}
-                  onChange={event => updateRow(row.id, { name: event.target.value })}
+                  onChange={event => {
+                    const newName = event.target.value;
+                    // Keep the default pointing at this row when its name is the selected
+                    // default, so a rename does not falsely trip the "not one of the
+                    // variants" guard on save.
+                    if (row.name === defaultVariant) {
+                      setDefaultVariant(newName);
+                    }
+                    updateRow(row.id, { name: newName });
+                  }}
                   size="small"
                   sx={{ flex: 1 }}
                 />

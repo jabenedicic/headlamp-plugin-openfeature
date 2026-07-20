@@ -65,7 +65,13 @@ beforeEach(() => {
 describe('FlagForm', () => {
   it('prefills the description and one row per existing variant', () => {
     render(
-      <FlagForm resource={fakeResource()} flagName="checkout" flag={baseFlag} open onClose={vi.fn()} />
+      <FlagForm
+        resource={fakeResource()}
+        flagName="checkout"
+        flag={baseFlag}
+        open
+        onClose={vi.fn()}
+      />
     );
     expect(screen.getByLabelText('Description')).toHaveValue('why it exists');
     const names = screen.getAllByLabelText('Name').map(input => (input as HTMLInputElement).value);
@@ -75,7 +81,13 @@ describe('FlagForm', () => {
   it('patches an edited description', async () => {
     const patch = vi.fn().mockResolvedValue({});
     render(
-      <FlagForm resource={fakeResource(patch)} flagName="checkout" flag={baseFlag} open onClose={vi.fn()} />
+      <FlagForm
+        resource={fakeResource(patch)}
+        flagName="checkout"
+        flag={baseFlag}
+        open
+        onClose={vi.fn()}
+      />
     );
     fireEvent.change(screen.getByLabelText('Description'), { target: { value: 'new reason' } });
     fireEvent.click(screen.getByRole('button', { name: 'Save' }));
@@ -86,7 +98,13 @@ describe('FlagForm', () => {
   it('clears the description with null when emptied', async () => {
     const patch = vi.fn().mockResolvedValue({});
     render(
-      <FlagForm resource={fakeResource(patch)} flagName="checkout" flag={baseFlag} open onClose={vi.fn()} />
+      <FlagForm
+        resource={fakeResource(patch)}
+        flagName="checkout"
+        flag={baseFlag}
+        open
+        onClose={vi.fn()}
+      />
     );
     fireEvent.change(screen.getByLabelText('Description'), { target: { value: '' } });
     fireEvent.click(screen.getByRole('button', { name: 'Save' }));
@@ -97,7 +115,13 @@ describe('FlagForm', () => {
   it('sends null for a removed variant', async () => {
     const patch = vi.fn().mockResolvedValue({});
     render(
-      <FlagForm resource={fakeResource(patch)} flagName="checkout" flag={baseFlag} open onClose={vi.fn()} />
+      <FlagForm
+        resource={fakeResource(patch)}
+        flagName="checkout"
+        flag={baseFlag}
+        open
+        onClose={vi.fn()}
+      />
     );
     fireEvent.click(screen.getByRole('button', { name: 'Remove variant off' }));
     fireEvent.click(screen.getByRole('button', { name: 'Save' }));
@@ -108,7 +132,13 @@ describe('FlagForm', () => {
   it('adds a variant with a lossless number value', async () => {
     const patch = vi.fn().mockResolvedValue({});
     render(
-      <FlagForm resource={fakeResource(patch)} flagName="checkout" flag={baseFlag} open onClose={vi.fn()} />
+      <FlagForm
+        resource={fakeResource(patch)}
+        flagName="checkout"
+        flag={baseFlag}
+        open
+        onClose={vi.fn()}
+      />
     );
     fireEvent.click(screen.getByRole('button', { name: 'Add variant' }));
     const names = screen.getAllByLabelText('Name');
@@ -124,7 +154,13 @@ describe('FlagForm', () => {
   it('moves the default to another variant', async () => {
     const patch = vi.fn().mockResolvedValue({});
     render(
-      <FlagForm resource={fakeResource(patch)} flagName="checkout" flag={baseFlag} open onClose={vi.fn()} />
+      <FlagForm
+        resource={fakeResource(patch)}
+        flagName="checkout"
+        flag={baseFlag}
+        open
+        onClose={vi.fn()}
+      />
     );
     fireEvent.click(screen.getByRole('radio', { name: 'Default variant off' }));
     fireEvent.click(screen.getByRole('button', { name: 'Save' }));
@@ -132,10 +168,37 @@ describe('FlagForm', () => {
     expect(patchedFlag(patch).defaultVariant).toBe('off');
   });
 
+  it('keeps the default pointing at a variant that is renamed', async () => {
+    const patch = vi.fn().mockResolvedValue({});
+    render(
+      <FlagForm
+        resource={fakeResource(patch)}
+        flagName="checkout"
+        flag={baseFlag}
+        open
+        onClose={vi.fn()}
+      />
+    );
+    // baseFlag defaults to "on" (the first row). Rename that row and confirm the default
+    // follows it, rather than tripping the "not one of the variants" guard.
+    const names = screen.getAllByLabelText('Name');
+    fireEvent.change(names[0], { target: { value: 'enabled' } });
+    fireEvent.click(screen.getByRole('button', { name: 'Save' }));
+    await waitFor(() => expect(patch).toHaveBeenCalled());
+    expect(patchedFlag(patch).defaultVariant).toBe('enabled');
+    expect(patchedFlag(patch).variants).toHaveProperty('enabled');
+  });
+
   it('blocks a save whose default names no current variant, without patching', () => {
     const patch = vi.fn().mockResolvedValue({});
     render(
-      <FlagForm resource={fakeResource(patch)} flagName="checkout" flag={baseFlag} open onClose={vi.fn()} />
+      <FlagForm
+        resource={fakeResource(patch)}
+        flagName="checkout"
+        flag={baseFlag}
+        open
+        onClose={vi.fn()}
+      />
     );
     // Remove the "on" variant that is currently the default.
     fireEvent.click(screen.getByRole('button', { name: 'Remove variant on' }));
@@ -148,13 +211,22 @@ describe('FlagForm', () => {
     const onClose = vi.fn();
     const patch = vi.fn().mockRejectedValue(new Error('422 invalid'));
     render(
-      <FlagForm resource={fakeResource(patch)} flagName="checkout" flag={baseFlag} open onClose={onClose} />
+      <FlagForm
+        resource={fakeResource(patch)}
+        flagName="checkout"
+        flag={baseFlag}
+        open
+        onClose={onClose}
+      />
     );
     fireEvent.click(screen.getByRole('button', { name: 'Save' }));
     await waitFor(() =>
-      expect(enqueueSnackbar).toHaveBeenCalledWith('Could not update flag "checkout": 422 invalid', {
-        variant: 'error',
-      })
+      expect(enqueueSnackbar).toHaveBeenCalledWith(
+        'Could not update flag "checkout": 422 invalid',
+        {
+          variant: 'error',
+        }
+      )
     );
     expect(onClose).not.toHaveBeenCalled();
   });
@@ -163,7 +235,13 @@ describe('FlagForm', () => {
     const patch = vi.fn().mockResolvedValue({});
     const flag: FlagDefinition = { ...baseFlag, targeting: { if: [{ '==': [1, 1] }, 'on'] } };
     render(
-      <FlagForm resource={fakeResource(patch)} flagName="checkout" flag={flag} open onClose={vi.fn()} />
+      <FlagForm
+        resource={fakeResource(patch)}
+        flagName="checkout"
+        flag={flag}
+        open
+        onClose={vi.fn()}
+      />
     );
     expect(screen.getByText('Targeting (read-only)')).toBeInTheDocument();
     fireEvent.click(screen.getByRole('button', { name: 'Save' }));

@@ -59,7 +59,11 @@ function patchAdd(resource: FeatureFlagResource, body: object): Promise<unknown>
     namespace: string | undefined,
     name: string | undefined
   ) => Promise<unknown>;
-  return mergePatch(body, resource.jsonData?.metadata?.namespace, resource.jsonData?.metadata?.name);
+  return mergePatch(
+    body,
+    resource.jsonData?.metadata?.namespace,
+    resource.jsonData?.metadata?.name
+  );
 }
 
 function AddFlagDialog({

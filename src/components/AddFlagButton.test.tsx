@@ -37,10 +37,7 @@ vi.mock('@kinvolk/headlamp-plugin/lib/CommonComponents', () => ({
 import AddFlagButton from './AddFlagButton';
 import type { FeatureFlagResource } from './FlagStateToggle';
 
-function fakeResource(
-  patch = vi.fn().mockResolvedValue({}),
-  flags: Record<string, unknown> = {}
-) {
+function fakeResource(patch = vi.fn().mockResolvedValue({}), flags: Record<string, unknown> = {}) {
   return {
     patch,
     jsonData: { metadata: { namespace: 'demo', name: 'flags' }, spec: { flagSpec: { flags } } },

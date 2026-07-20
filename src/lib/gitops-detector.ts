@@ -62,7 +62,7 @@ function getAnnotations(item: unknown): Record<string, unknown> {
   return annotations as Record<string, unknown>;
 }
 
-/** True only for the exact string value on a present annotation. */
+/** True when the annotation is present as a non-empty string (its value is not inspected). */
 function has(annotations: Record<string, unknown>, key: string): boolean {
   const value = annotations[key];
   return typeof value === 'string' && value.length > 0;

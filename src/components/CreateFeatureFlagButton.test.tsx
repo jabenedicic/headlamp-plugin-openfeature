@@ -83,6 +83,14 @@ describe('CreateFeatureFlagButton', () => {
     expect(screen.getByText(/Name must be a lowercase RFC 1123 label/)).toBeInTheDocument();
   });
 
+  it('blocks an invalid RFC1123 namespace before POSTing', () => {
+    render(<CreateFeatureFlagButton />);
+    openAndFill('valid-name', 'Invalid NS');
+    fireEvent.click(screen.getByRole('button', { name: 'Create' }));
+    expect(post).not.toHaveBeenCalled();
+    expect(screen.getByText(/Namespace must be a lowercase RFC 1123 label/)).toBeInTheDocument();
+  });
+
   it('surfaces a server error and keeps the dialog open', async () => {
     post.mockRejectedValue(new Error('409 already exists'));
     render(<CreateFeatureFlagButton />);
