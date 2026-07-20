@@ -34,8 +34,9 @@ Installing a Headlamp plugin means placing its folder in Headlamp's plugins
 directory and restarting Headlamp:
 
 - **Headlamp desktop** — extract the release tarball into your Headlamp plugins
-  directory (its location varies by platform) and restart the app. From `0.2`
-  onward the plugin will also be installable from the in-app Plugin Catalog.
+  directory (its location varies by platform) and restart the app. The plugin is also
+  published to [Artifact Hub](https://artifacthub.io) for discovery and installation via
+  the in-app Plugin Catalog — see [docs/artifacthub.md](docs/artifacthub.md).
 - **Headlamp server / in-cluster** — extract the tarball into the directory passed
   to the server's `-plugins-dir` flag and restart the server.
 

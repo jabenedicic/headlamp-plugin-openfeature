@@ -1,0 +1,34 @@
+# SPDX-License-Identifier: Apache-2.0
+#
+# Artifact Hub package metadata for the OpenFeature Headlamp plugin, version 0.1.0.
+# One such file per released version, in its own version directory. The minimum Headlamp
+# version lives HERE (headlamp/plugin/version-compat) — not in package.json.
+version: 0.1.0
+name: headlamp-openfeature
+displayName: OpenFeature Operator
+createdAt: "2026-07-18T18:31:07Z"
+description: >-
+  A Headlamp plugin for viewing and managing the OpenFeature Operator's custom
+  resources (FeatureFlag, FeatureFlagSource, Flagd, InProcessConfiguration) using
+  Headlamp's native resource screens.
+license: Apache-2.0
+homeURL: https://github.com/jabenedicic/headlamp-plugin-openfeature
+links:
+  - name: source
+    url: https://github.com/jabenedicic/headlamp-plugin-openfeature
+  - name: release
+    url: https://github.com/jabenedicic/headlamp-plugin-openfeature/releases/tag/headlamp-openfeature-v0.1.0
+keywords:
+  - headlamp
+  - openfeature
+  - feature-flags
+  - flagd
+  - kubernetes
+maintainers:
+  - name: Jason Benedicic
+    email: 48251655+jabenedicic@users.noreply.github.com
+annotations:
+  headlamp/plugin/archive-url: "https://github.com/jabenedicic/headlamp-plugin-openfeature/releases/download/headlamp-openfeature-v0.1.0/headlamp-openfeature-0.1.0.tar.gz"
+  headlamp/plugin/archive-checksum: "sha256:b7b14107b897614a946524fc0643fe5445a77c501fe75cc998043d140c4180e5"
+  headlamp/plugin/version-compat: ">=0.43.0"
+  headlamp/plugin/distro-compat: "in-cluster,web,docker-desktop"

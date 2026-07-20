@@ -1,0 +1,13 @@
+# SPDX-License-Identifier: Apache-2.0
+#
+# Artifact Hub repository metadata for the OpenFeature Headlamp plugin.
+# Lives at the root of the packages path (this `artifacthub/` directory). Artifact Hub
+# reads it to enable the Ownership claim / Verified publisher features.
+#
+# When registering this repository on Artifact Hub (Control Panel -> Repositories ->
+# Add, kind "Headlamp plugins", URL pointing at this directory on the default branch),
+# use the same repositoryID below to claim ownership.
+repositoryID: 1245aa3a-1533-4871-8691-0a710cabe5d1
+owners:
+  - name: Jason Benedicic
+    email: 48251655+jabenedicic@users.noreply.github.com
