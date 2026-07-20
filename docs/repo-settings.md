@@ -116,7 +116,7 @@ empty rather than point at a placeholder.
 
 ```bash
 # After the Artifact Hub listing is live:
-gh repo edit --homepage "https://artifacthub.io/packages/headlamp/<repo>/headlamp-openfeature"
+gh repo edit --homepage "https://artifacthub.io/packages/headlamp/openfeature/headlamp-openfeature"
 ```
 
 Verify: `gh repo view --json description,homepageUrl,repositoryTopics`.
