@@ -41,8 +41,19 @@ jobs:
     permissions:
       contents: write
     steps:
+      - name: Mint a token for the release bot
+        id: app-token
+        uses: actions/create-github-app-token@bcd2ba49218906704ab6c1aa796996da409d3eb1 # v3.2.0
+        with:
+          client-id: ${{ secrets.RELEASE_APP_ID }}
+          private-key: ${{ secrets.RELEASE_APP_PRIVATE_KEY }}
       - name: Checkout repository
         uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7.0.0
+        with:
+          # The app token (not GITHUB_TOKEN) so the Artifact Hub metadata commit below can
+          # push back to main the same way release-please pushes release commits.
+          token: ${{ steps.app-token.outputs.token }}
+          ref: main
       - name: Setup Node
         uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7.0.0
         with:
@@ -65,3 +76,29 @@ jobs:
         run: |
           gh release upload "${{ needs.release-please.outputs.tag_name }}" \
             "$TARBALL" "$TARBALL.sha256" --clobber
+      # Generate this version's Artifact Hub package metadata from the released tarball's URL
+      # and sha256 (which only exist now, post-release), then commit it back to main so
+      # Artifact Hub picks it up on its next scan. A chore commit — release-please ignores it,
+      # so it does not cut another release or re-trigger this job.
+      - name: Generate and commit the Artifact Hub package metadata
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          TAG: ${{ needs.release-please.outputs.tag_name }}
+        run: |
+          VERSION="${TAG#headlamp-openfeature-v}"
+          ARCHIVE_URL="https://github.com/${{ github.repository }}/releases/download/${TAG}/$(basename "$TARBALL")"
+          node scripts/gen-artifacthub-pkg.mjs \
+            --version "$VERSION" \
+            --tag "$TAG" \
+            --archive-url "$ARCHIVE_URL" \
+            --checksum "$(cat "$TARBALL.sha256")" \
+            --created-at "$(gh release view "$TAG" --json publishedAt --jq .publishedAt)"
+          git config user.name "Jason Benedicic"
+          git config user.email "48251655+jabenedicic@users.noreply.github.com"
+          git add "artifacthub/headlamp-openfeature/${VERSION}/artifacthub-pkg.yml"
+          if git diff --cached --quiet; then
+            echo "Artifact Hub metadata already up to date for ${VERSION}."
+          else
+            git commit --signoff -m "chore: add Artifact Hub metadata for ${TAG}"
+            git push origin HEAD:main
+          fi

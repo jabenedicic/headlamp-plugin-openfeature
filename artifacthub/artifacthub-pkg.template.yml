@@ -1,10 +1,18 @@
 # SPDX-License-Identifier: Apache-2.0
 #
 # Artifact Hub package metadata (generated — see scripts/gen-artifacthub-pkg.mjs).
-version: 0.1.0
+# >>> template-instructions
+# This is the TEMPLATE. The release workflow renders it into
+# artifacthub/headlamp-openfeature/<version>/artifacthub-pkg.yml with the released tarball's
+# URL and sha256. Edit the STATIC fields here (description, keywords, maintainers,
+# version-compat); the __PLACEHOLDER__ tokens are filled per release. The minimum Headlamp
+# version lives in headlamp/plugin/version-compat below — keep it in sync with
+# docs/compat-matrix.md.
+# <<< template-instructions
+version: __VERSION__
 name: headlamp-openfeature
 displayName: OpenFeature Operator
-createdAt: "2026-07-18T18:31:07Z"
+createdAt: "__CREATED_AT__"
 description: >-
   A Headlamp plugin for viewing and managing the OpenFeature Operator's custom
   resources (FeatureFlag, FeatureFlagSource, Flagd, InProcessConfiguration) using
@@ -15,7 +23,7 @@ links:
   - name: source
     url: https://github.com/jabenedicic/headlamp-plugin-openfeature
   - name: release
-    url: https://github.com/jabenedicic/headlamp-plugin-openfeature/releases/tag/headlamp-openfeature-v0.1.0
+    url: https://github.com/jabenedicic/headlamp-plugin-openfeature/releases/tag/__TAG__
 keywords:
   - headlamp
   - openfeature
@@ -26,7 +34,7 @@ maintainers:
   - name: Jason Benedicic
     email: 48251655+jabenedicic@users.noreply.github.com
 annotations:
-  headlamp/plugin/archive-url: "https://github.com/jabenedicic/headlamp-plugin-openfeature/releases/download/headlamp-openfeature-v0.1.0/headlamp-openfeature-0.1.0.tar.gz"
-  headlamp/plugin/archive-checksum: "sha256:b7b14107b897614a946524fc0643fe5445a77c501fe75cc998043d140c4180e5"
+  headlamp/plugin/archive-url: "__ARCHIVE_URL__"
+  headlamp/plugin/archive-checksum: "sha256:__CHECKSUM__"
   headlamp/plugin/version-compat: ">=0.43.0"
   headlamp/plugin/distro-compat: "in-cluster,web,docker-desktop"
