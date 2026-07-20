@@ -50,6 +50,9 @@ fi
 # Headlamp loads no cluster, and every Playwright click times out. Stage a
 # world-readable copy in a temp dir and mount that instead.
 KUBE_STAGE="$(mktemp -d)"
+# mktemp -d is 0700; the container's non-root user must also be able to TRAVERSE the
+# directory (not just read the file), so make the dir world-executable too.
+chmod 755 "${KUBE_STAGE}"
 cp "${HOME}/.kube/config" "${KUBE_STAGE}/config"
 chmod 644 "${KUBE_STAGE}/config"
 
