@@ -162,8 +162,8 @@
   "devDependencies": {
     "@kinvolk/headlamp-plugin": "^0.14.0",
     "@playwright/test": "^1.61.1",
-    "@size-limit/file": "^12.1.0",
+    "@size-limit/file": "^13.0.0",
     "license-checker": "^25.0.1",
-    "size-limit": "^12.1.0"
+    "size-limit": "^13.0.0"
   }
 }
