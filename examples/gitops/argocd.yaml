@@ -1,0 +1,22 @@
+# SPDX-License-Identifier: Apache-2.0
+#
+# Argo CD-managed FeatureFlag example.
+# Observe: the detail view should be read-only, show the "GitOps managed" chip, and show Argo CD in the "Managed by" column.
+apiVersion: core.openfeature.dev/v1beta1
+kind: FeatureFlag
+metadata:
+  name: argocd-managed-flag
+  namespace: openfeature-demo
+  annotations:
+    argocd.argoproj.io/tracking-id: openfeature-app:core.openfeature.dev/FeatureFlag:openfeature-demo/argocd-managed-flag
+spec:
+  flagSpec:
+    flags:
+      gitops-example:
+        state: ENABLED
+        defaultVariant: "off"
+        variants:
+          "on": true
+          "off": false
+        metadata:
+          description: Demonstrates a FeatureFlag managed by Argo CD.
