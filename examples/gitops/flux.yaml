@@ -1,0 +1,23 @@
+# SPDX-License-Identifier: Apache-2.0
+#
+# Flux-managed FeatureFlag example.
+# Observe: the detail view should be read-only, show the "GitOps managed" chip, and show Flux in the "Managed by" column.
+apiVersion: core.openfeature.dev/v1beta1
+kind: FeatureFlag
+metadata:
+  name: flux-managed-flag
+  namespace: openfeature-demo
+  annotations:
+    kustomize.toolkit.fluxcd.io/name: openfeature-app
+    kustomize.toolkit.fluxcd.io/namespace: openfeature-demo
+spec:
+  flagSpec:
+    flags:
+      gitops-example:
+        state: ENABLED
+        defaultVariant: "off"
+        variants:
+          "on": true
+          "off": false
+        metadata:
+          description: Demonstrates a FeatureFlag managed by Flux.

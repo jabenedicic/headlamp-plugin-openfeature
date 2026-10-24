@@ -1,0 +1,24 @@
+# SPDX-License-Identifier: Apache-2.0
+#
+# GitOps-managed FeatureFlag with the editable override.
+# Observe: the "GitOps managed" chip remains visible, the "Managed by" column shows Flux, and write/edit controls are available.
+apiVersion: core.openfeature.dev/v1beta1
+kind: FeatureFlag
+metadata:
+  name: editable-gitops-flag
+  namespace: openfeature-demo
+  annotations:
+    kustomize.toolkit.fluxcd.io/name: openfeature-app
+    kustomize.toolkit.fluxcd.io/namespace: openfeature-demo
+    headlamp.openfeature.io/editable: "true"
+spec:
+  flagSpec:
+    flags:
+      gitops-example:
+        state: ENABLED
+        defaultVariant: "off"
+        variants:
+          "on": true
+          "off": false
+        metadata:
+          description: Demonstrates an editable GitOps-managed FeatureFlag.
